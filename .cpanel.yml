@@ -4,3 +4,5 @@ deployment:
     - export DEPLOYPATH=$HOME/occ.qodit.org/
     - /bin/mkdir -p $DEPLOYPATH
     - /bin/cp -R index.html img video subs $DEPLOYPATH
+    - /bin/find $DEPLOYPATH -type d -exec /bin/chmod 755 {} +
+    - /bin/find $DEPLOYPATH -type f -exec /bin/chmod 644 {} +
