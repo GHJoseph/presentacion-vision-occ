@@ -1107,11 +1107,12 @@ const QR_JS='https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcod
 function relay(room){
   const u=(op,x)=>`relay.php?room=${room}&op=${op}${x||''}`;
   const ok=r=>r.ok?r.json():Promise.reject(r.status);
+  const req=(url,opt)=>{const c=new AbortController(),t=setTimeout(()=>c.abort(),4000);return fetch(url,Object.assign({cache:'no-store',signal:c.signal},opt)).then(ok).finally(()=>clearTimeout(t))};
   let pending=null,sending=false;
-  const post=(op,obj)=>fetch(u(op),{method:'POST',body:JSON.stringify(obj),cache:'no-store'}).then(ok);
+  const post=(op,obj)=>req(u(op),{method:'POST',body:JSON.stringify(obj)});
   return{
     post,
-    get:(op,x)=>fetch(u(op,x),{cache:'no-store'}).then(ok),
+    get:(op,x)=>req(u(op,x)),
     state(m){
       pending=m;if(sending)return;sending=true;
       const go=()=>{const x=pending;pending=null;post('setstate',x).catch(()=>{}).finally(()=>{if(pending)go();else sending=false})};
@@ -1217,7 +1218,7 @@ function bootAudience(room){
   }
   addEventListener('message',e=>onMsg(e.data));
   send({t:'hello'});
-  setInterval(()=>{if(!linked||Date.now()-last>3000){linked=false;send({t:'hello'})}salaUi()},1500);
+  setInterval(()=>{if(!linked||Date.now()-last>9000){linked=false;send({t:'hello'})}salaUi()},1500);
   if(room)hostRoom();
   let subTxt=null;
   (function subsTick(){
@@ -1300,7 +1301,8 @@ function bootPresenter(popup,code){
     let wl=null;
     const wake=()=>{if(navigator.wakeLock&&!wl)navigator.wakeLock.request('screen').then(l=>{wl=l;l.addEventListener('release',()=>wl=null)}).catch(()=>{})};
     addEventListener('pointerdown',wake);
-    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')wake()});
+    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){wake();push()}});
+    addEventListener('online',push);
   }
   if(document.body.classList.contains('ctl')){$('#cBlack').textContent='Pantalla negra';$('#cRun').title='Cronómetro'}
   $('#mPrev').onclick=()=>{doAction('prev');update()};
@@ -1412,7 +1414,7 @@ function bootPresenter(popup,code){
       else{pace.className='early';pace.textContent=`Adelantado ${mmss(-d)}`}
       if(!T.run)pace.textContent+=' · en pausa';
     }
-    const ok=(aud&&!aud.closed)||(R&&Date.now()-lastIn<5000);
+    const ok=(aud&&!aud.closed)||(R&&Date.now()-lastIn<10000);
     const l=$('#cLink');l.classList.toggle('ok',!!ok);l.textContent=ok?'● Proyector conectado':'● '+(linkMsg||'Proyector desconectado');
     const tc=$('#tCd');if(tc&&S.cd)tc.textContent=mss(cdLeft(S.cd));
     if(S.cd&&S.cd.end&&cdLeft(S.cd)<=0){S.cd.left=0;S.cd.end=null;tools()}
