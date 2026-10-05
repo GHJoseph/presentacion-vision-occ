@@ -1,0 +1,6 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=$HOME/occ.qodit.org/
+    - /bin/mkdir -p $DEPLOYPATH
+    - /bin/cp -R index.html img video subs $DEPLOYPATH
