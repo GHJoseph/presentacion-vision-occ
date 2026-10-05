@@ -367,10 +367,13 @@ dialog h4{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#a6
 #salaMini{position:absolute;right:14px;bottom:14px;z-index:41;display:none;background:rgba(20,22,24,.85);color:#fff;font:600 13px var(--font);padding:8px 14px;border-radius:999px}
 #salaMini.on{display:block}
 #mnav{display:none}
-body.ctl #console{grid-template-rows:auto 1fr auto;grid-template-columns:minmax(0,1fr);height:100dvh;width:100vw;overflow:hidden}
+body.ctl,body.ctl #console{overflow-x:hidden}
+body.ctl #console{grid-template-rows:auto 1fr auto;grid-template-columns:minmax(0,1fr);height:100dvh;left:0;right:0;width:100%;overflow:hidden}
+body.ctl .lab span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+body.ctl #console main{overflow-x:hidden}
 body.ctl #console header>*,body.ctl #console main>*,body.ctl .colL>*,body.ctl .colR>*{min-width:0;max-width:100%}
 body.ctl .colL,body.ctl .colR{width:100%}
-body.ctl .hb .cb{min-width:0;white-space:nowrap}
+body.ctl .hb .cb{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:4px;padding-right:4px;font-size:12.5px}
 body.ctl #console header{gap:8px 10px;padding:8px 10px}
 body.ctl .clk b{font-size:24px}
 body.ctl #cPace{font-size:12px;padding:5px 10px}
@@ -1100,9 +1103,22 @@ function doAction(a){
   else if(a==='vidr')S.vid={play:true,r:S.vid.r+1};
 }
 
-const PEER_JS='https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js';
 const QR_JS='https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js';
-const ROOM=c=>'qodit-occvp-'+c;
+function relay(room){
+  const u=(op,x)=>`relay.php?room=${room}&op=${op}${x||''}`;
+  const ok=r=>r.ok?r.json():Promise.reject(r.status);
+  let pending=null,sending=false;
+  const post=(op,obj)=>fetch(u(op),{method:'POST',body:JSON.stringify(obj),cache:'no-store'}).then(ok);
+  return{
+    post,
+    get:(op,x)=>fetch(u(op,x),{cache:'no-store'}).then(ok),
+    state(m){
+      pending=m;if(sending)return;sending=true;
+      const go=()=>{const x=pending;pending=null;post('setstate',x).catch(()=>{}).finally(()=>{if(pending)go();else sending=false})};
+      go();
+    }
+  };
+}
 const isWeb=/^https?:$/.test(location.protocol);
 function loadJs(src){return new Promise((ok,ko)=>{const t=document.createElement('script');t.src=src;t.onload=ok;t.onerror=ko;document.head.appendChild(t)})}
 
@@ -1135,7 +1151,7 @@ function bootAudience(room){
   document.body.className='aud';
   deck.querySelectorAll('aside.notes').forEach(n=>n.remove());
   deck.querySelectorAll('video').forEach(v=>v.preload='metadata');
-  let rconn=null,everLinked=false,code='';
+  let R=null,everLinked=false,code='',vidSent=0;
   const frame=$('#view'),stage=$('#stage');
   const refit=()=>fit(frame,stage);refit();addEventListener('resize',refit);
   let linked=false,last=0,shown=-1,cfgSig='',vr=-1,blocked=false,lastPlay=false;
@@ -1149,7 +1165,7 @@ function bootAudience(room){
   const send=m=>{
     const msg=Object.assign({occ:1},m);
     try{window.opener&&window.opener.postMessage(msg,'*')}catch(e){}
-    try{if(rconn&&rconn.open)rconn.send(msg)}catch(e){}
+    if(R&&(msg.t!=='vid'||Date.now()-vidSent>1000)){if(msg.t==='vid')vidSent=Date.now();R.post('send',msg).catch(()=>{})}
   };
   function salaUi(){
     if(!room)return;
@@ -1160,27 +1176,20 @@ function bootAudience(room){
   }
   async function hostRoom(){
     $('#sala').classList.add('on');
-    try{await loadJs(PEER_JS);await loadJs(QR_JS)}catch(e){$('#salaSt').textContent='Sin internet: no se pudo preparar el control desde el celular.';return}
-    let tries=0;
-    const start=()=>{
-      code=ls.get('occ-sala')||String(Math.floor(100000+Math.random()*900000));ls.set('occ-sala',code);
-      const url=location.href.split('#')[0]+'#control='+code;
-      const qr=qrcode(0,'M');qr.addData(url);qr.make();
-      $('#salaQr').innerHTML=qr.createSvgTag(8,2);$('#salaCode').textContent=code;
-      const peer=new Peer(ROOM(code));
-      peer.on('open',()=>{$('#salaSt').textContent='Listo. Esperando el celular…'});
-      peer.on('connection',c=>{
-        c.on('open',()=>{rconn=c;send({t:'hello'})});
-        c.on('data',onMsg);
-        c.on('close',()=>{if(rconn===c)rconn=null});
-      });
-      peer.on('disconnected',()=>{try{peer.reconnect()}catch(e){}});
-      peer.on('error',e=>{
-        if(e.type==='unavailable-id'){peer.destroy();if(++tries>3)ls.set('occ-sala',null);setTimeout(start,2500)}
-        else $('#salaSt').textContent='Reintentando conexión…';
-      });
-    };
-    start();
+    try{await loadJs(QR_JS)}catch(e){$('#salaSt').textContent='Sin internet: no se pudo preparar el control desde el celular.';return}
+    code=ls.get('occ-sala')||String(Math.floor(100000+Math.random()*900000));ls.set('occ-sala',code);
+    const qr=qrcode(0,'M');qr.addData(location.href.split('#')[0]+'#control='+code);qr.make();
+    $('#salaQr').innerHTML=qr.createSvgTag(8,2);$('#salaCode').textContent=code;
+    try{await fetch('relay.php?ping=1',{cache:'no-store'}).then(r=>r.json())}catch(e){$('#salaSt').textContent='No se encontró relay.php en el servidor.';return}
+    R=relay(code);
+    $('#salaSt').textContent='Listo. Esperando el celular…';
+    let since=-1,busy=false;
+    setInterval(async()=>{
+      if(busy)return;busy=true;
+      try{const d=await R.get('getstate','&since='+Math.max(since,0));if(since<0)since=d.seq||0;else if(d.seq){since=d.seq;onMsg(d.msg)}}catch(e){}
+      busy=false;
+    },350);
+    setInterval(()=>R.post('send',{occ:1,t:'ping'}).catch(()=>{}),2000);
   }
   function video(sec){
     const v=sec.querySelector('video');if(!v)return;
@@ -1241,7 +1250,7 @@ function bootAudience(room){
 
 function bootPresenter(popup,code){
   document.body.className='pres'+(code||innerWidth<820?' ctl':'');
-  let rc=null;
+  let R=null,lastIn=0;
   applyCfg(deck,S.cfg);
   let aud=popup||null,vinfo=null;
   const saved=ls.get('occ-vp-state-huaraz');
@@ -1274,19 +1283,16 @@ function bootPresenter(popup,code){
   }
   addEventListener('message',e=>handle(e.data,e.source));
   let linkMsg='';
-  async function joinRoom(){
-    linkMsg='Conectando con la sala '+code+'…';
-    try{await loadJs(PEER_JS)}catch(e){linkMsg='Sin internet en el celular';setTimeout(joinRoom,4000);return}
-    const peer=new Peer();
-    const dial=()=>{
-      const c=peer.connect(ROOM(code),{reliable:true,serialization:'json'});
-      c.on('open',()=>{rc=c;linkMsg='';push()});
-      c.on('data',d=>handle(d,null));
-      c.on('close',()=>{if(rc===c){rc=null;linkMsg='Reconectando…';setTimeout(dial,2000)}});
-    };
-    peer.on('open',dial);
-    peer.on('disconnected',()=>{try{peer.reconnect()}catch(e){}});
-    peer.on('error',e=>{if(e.type==='peer-unavailable'){linkMsg='No se encuentra la sala '+code+'. ¿Está abierta la laptop?';setTimeout(dial,3000)}});
+  function joinRoom(){
+    R=relay(code);
+    linkMsg='Conectando con la sala '+code+'… ¿Está abierta en la laptop?';
+    let busy=false;
+    setInterval(async()=>{
+      if(busy)return;busy=true;
+      try{const arr=await R.get('recv');if(arr.length){lastIn=Date.now();arr.forEach(m=>handle(m,null))}}catch(e){}
+      busy=false;
+    },400);
+    push();
   }
   if(code){
     $('#cOpen').style.display='none';
@@ -1311,7 +1317,7 @@ function bootPresenter(popup,code){
   function push(){
     const m={occ:1,t:'state',s:S};
     try{if(aud&&!aud.closed)aud.postMessage(m,'*')}catch(e){}
-    try{if(rc&&rc.open)rc.send(m)}catch(e){}
+    if(R)R.state(m);
   }
 
   function preview(box,i,step,which){
@@ -1406,7 +1412,7 @@ function bootPresenter(popup,code){
       else{pace.className='early';pace.textContent=`Adelantado ${mmss(-d)}`}
       if(!T.run)pace.textContent+=' · en pausa';
     }
-    const ok=(aud&&!aud.closed)||(rc&&rc.open);
+    const ok=(aud&&!aud.closed)||(R&&Date.now()-lastIn<5000);
     const l=$('#cLink');l.classList.toggle('ok',!!ok);l.textContent=ok?'● Proyector conectado':'● '+(linkMsg||'Proyector desconectado');
     const tc=$('#tCd');if(tc&&S.cd)tc.textContent=mss(cdLeft(S.cd));
     if(S.cd&&S.cd.end&&cdLeft(S.cd)<=0){S.cd.left=0;S.cd.end=null;tools()}
