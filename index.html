@@ -1,0 +1,1460 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Presentación de la Visión</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --g:#296a4d;--g2:#3c8a63;--lime:#8cc63f;--gx:#eaf3ee;
+  --ink:#2e2e2e;--gray:#555;--muted:#7d8481;--bg:#fff;--line:#e3e8e5;
+  --red:#c8202f;--navy:#1f3864;--purple:#5864b5;
+  --c1:#f4a48f;--c2:#f3a9d6;--c3:#bab4e8;--c4:#a8d98a;--c5:#f0cf8f;
+  --font:'Montserrat',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --body:'Open Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#0f1113;font-family:var(--font);color:var(--ink);-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer}
+#view,#console,#launch{display:none}
+body.aud #view{display:block;position:fixed;inset:0;background:#000;cursor:none}
+body.aud.cursor #view{cursor:default}
+body.pres #console{display:grid}
+body.home #launch{display:flex}
+
+.frame{position:relative;overflow:hidden}
+.stage{position:absolute;left:50%;top:50%;width:1600px;height:900px;transform-origin:center;background:var(--bg);overflow:hidden}
+#deck{position:absolute;inset:0}
+.sl{position:absolute;inset:0;padding:70px 110px 0;opacity:0;visibility:hidden;transition:opacity .6s ease,visibility 0s .6s;font-size:30px;line-height:1.4;background:var(--bg)}
+.sl.active{opacity:1;visibility:visible;transition:opacity .6s ease}
+.sl>:where(:not(.mtn):not(.logos)){position:relative}
+.notes{display:none!important}
+
+.mtn{position:absolute;left:0;right:0;top:648px;pointer-events:none}
+.mtn img{width:100%;display:block}
+.sl.big .mtn{left:-80px;right:-190px;top:550px}
+.logos{position:absolute;top:10px;right:36px;display:flex;align-items:center;gap:6px;z-index:2}
+.logos img:first-child{height:96px}
+.logos img:last-child{height:112px}
+
+.h{font-size:66px;line-height:1.12;letter-spacing:.16em;text-transform:uppercase;color:var(--g);font-weight:400;margin:0 0 36px}
+.h b{font-weight:800;letter-spacing:.06em}
+.h.stack b{display:block}
+.sub{font-size:28px;color:var(--gray);margin:-18px 0 30px}
+.key{background:var(--gx);border-radius:16px;padding:22px 30px;font-size:26px;color:var(--ink)}
+.key b{color:var(--g)}
+.blank{color:var(--muted);letter-spacing:.05em}
+
+.f{opacity:0;transform:translateY(18px);transition:opacity .5s ease,transform .5s ease}
+.f.on{opacity:1;transform:none}
+.f.pop{transform:scale(.85)}
+.f.pop.on{transform:none}
+@keyframes rise{from{transform:translateY(70px);opacity:0}to{transform:none;opacity:1}}
+@keyframes pop{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
+@keyframes fadeUp{from{transform:translateY(26px);opacity:0}to{transform:none;opacity:1}}
+
+.cover{padding:0;text-align:center}
+.cover .lg{position:absolute;left:0;right:0;top:80px;display:flex;justify-content:center;align-items:center;gap:0}
+.cover .lg img:first-child{height:310px;margin-right:-30px}
+.cover .lg img:last-child{height:350px}
+.sl.active.cover .lg img{animation:pop .8s cubic-bezier(.2,.9,.3,1.25) both}
+.sl.active.cover .lg img:last-child{animation-delay:.18s}
+.cover .tt{position:absolute;left:0;right:0;top:405px}
+.cover .tt span{display:block;text-transform:uppercase;font-size:46px;letter-spacing:.42em;color:var(--g);text-indent:.42em}
+.cover .tt b{display:block;font-size:72px;font-weight:800;color:var(--g);letter-spacing:.04em;margin-top:2px}
+.sl.active.cover .tt{animation:fadeUp .8s .35s both}
+.cover .m1,.cover .m2{position:absolute;left:0;width:100%}
+.cover .m1{top:414px}
+.cover .m2{top:513px}
+.cover .who{position:absolute;left:0;right:0;top:790px;color:#fff;font-weight:800;font-size:22px;letter-spacing:.24em;text-transform:uppercase}
+[data-hide-empty].blank{display:none}
+.zona{display:grid;grid-template-columns:470px 1fr;gap:60px;align-items:start}
+.zona .base{background:var(--g);color:#fff;border-radius:28px;padding:34px 36px;box-shadow:0 22px 40px -22px rgba(41,106,77,.8)}
+.zona .base small{display:block;font-size:17px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:#c9ec9c}
+.zona .base b{display:block;font-size:52px;font-weight:800;line-height:1.1;margin:8px 0 14px}
+.zona .base p{margin:0;font-size:24px;line-height:1.45;opacity:.95}
+.provs{display:flex;flex-wrap:wrap;gap:12px}
+.provs span{background:var(--gx);color:var(--g);font-size:22px;font-weight:700;padding:10px 18px;border-radius:999px;opacity:0}
+.provs span.hq{background:var(--g);color:#fff;box-shadow:0 10px 20px -10px rgba(41,106,77,.8)}
+.provs.sel span:not(.hq){background:#f2f4f3;color:#a7b0ab}
+.zona .base .team-line{margin-top:18px;padding-top:16px;border-top:1px solid rgba(255,255,255,.25);font-size:19px;opacity:.85}
+.sl.active .provs span{animation:pop .45s cubic-bezier(.2,.9,.3,1.3) both}
+.cover .bye{position:absolute;left:0;right:0;top:395px;font-size:96px;font-weight:900;color:var(--g)}
+
+.video{padding:0;background:#000}
+.video .vid{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000}
+.subs{position:absolute;left:0;right:0;bottom:44px;display:flex;justify-content:center;align-items:center;pointer-events:none;z-index:3;padding:0 80px}
+.subs span{display:none;max-width:1360px;background:rgba(0,0,0,.8);color:#fff;font:700 40px/1.3 var(--font);padding:12px 28px;border-radius:12px;text-align:center;text-shadow:0 2px 4px rgba(0,0,0,.6)}
+.subs.on span{display:block}
+.subs.cover{bottom:0;height:215px}
+.subs.cover.on{background:#000}
+.subs.cover span{background:none;padding:0}
+
+.mission{display:grid;grid-template-columns:repeat(6,1fr);gap:30px;margin:10px 60px 0}
+.mission>div{grid-column:span 2;border-radius:26px;min-height:200px;display:grid;place-items:center;text-align:center;padding:22px 28px;font-weight:700;font-size:30px;line-height:1.25;color:#2a2a2a;box-shadow:0 16px 26px -16px rgba(0,0,0,.35)}
+.mission>div:nth-child(4){grid-column:2/span 2}
+.mission>div:nth-child(1){background:var(--c1)}.mission>div:nth-child(2){background:var(--c2)}.mission>div:nth-child(3){background:var(--c3)}.mission>div:nth-child(4){background:var(--c4)}.mission>div:nth-child(5){background:var(--c5)}
+
+.hero{padding:0}
+.hero>img{position:absolute;left:0;top:0;width:100%;height:515px;object-fit:cover}
+.sl.active.hero>img{animation:fadeUp 1s both}
+.hero .h{position:absolute;left:0;right:0;top:560px;text-align:center;font-size:72px}
+
+.poll .row{display:grid;grid-template-columns:380px 1fr 130px;align-items:center;gap:26px;margin-bottom:28px}
+.poll .pl{font-size:30px;font-weight:600;color:var(--gray)}
+.poll .track{height:70px;background:#eef2ef;border-radius:18px;overflow:hidden}
+.poll .bar{height:100%;width:0;border-radius:18px;background:linear-gradient(90deg,var(--lime),var(--g));transition:width .8s cubic-bezier(.2,.8,.2,1)}
+.poll .val{font-size:54px;font-weight:800;color:var(--g)}
+.ask{display:flex;gap:24px;align-items:center;background:#fff;border:3px solid var(--g);border-radius:22px;padding:22px 30px;font-size:29px;font-weight:600;max-width:1180px}
+.ask .q{width:64px;height:64px;border-radius:14px;background:var(--g);color:#fff;display:grid;place-items:center;font-size:42px;font-weight:800;flex:none}
+
+.verse{padding:110px 0 0 230px}
+.verse h3{font-size:62px;font-weight:800;letter-spacing:.06em;color:var(--g);margin:0 0 30px}
+.verse p{font-family:var(--body);font-size:31px;line-height:1.55;color:#111;margin:0;max-width:1040px;text-align:justify}
+.verse p sup{font-size:.6em;color:var(--g);font-weight:600}
+.verse .cm{display:block;width:520px;margin:26px 0 0 520px}
+.verse.short p{font-size:38px;max-width:960px;text-align:left}
+.verse .side{position:absolute;right:56px;top:180px;width:330px;display:flex;flex-direction:column;gap:20px}
+.verse.withq{padding-left:120px}
+.verse.withq p{max-width:960px}
+.verse.withq .cm{margin-left:440px}
+.qc{background:#fff;border-radius:20px;padding:22px 24px;font-size:24px;font-weight:600;line-height:1.35;box-shadow:0 16px 34px -18px rgba(0,0,0,.4);border:2px solid var(--gx)}
+.qc small{display:block;font-size:15px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:var(--g);margin-bottom:6px}
+.cdw{display:flex;align-items:center;gap:22px;background:var(--g);color:#fff;border-radius:22px;padding:18px 24px}
+.cd{position:relative;width:128px;height:128px;flex:none}
+.cd svg{width:100%;height:100%;transform:rotate(-90deg)}
+.cd circle{fill:none;stroke-width:12}
+.cd .bg{stroke:rgba(255,255,255,.22)}
+.cd .fg{stroke:#c9ec9c;stroke-linecap:round;stroke-dasharray:540.35;transition:stroke-dashoffset .25s linear}
+.cd b{position:absolute;inset:0;display:grid;place-items:center;font-size:32px;font-weight:800;font-variant-numeric:tabular-nums}
+.cd.done .fg{stroke:#ffb0a3}
+.cdw .t{font-size:23px;font-weight:700;line-height:1.3}
+.cdw .t small{display:block;font-weight:500;font-size:17px;opacity:.85}
+
+.strat{position:absolute;left:110px;top:215px;width:1345px}
+.strat img{width:100%;display:block;clip-path:inset(0 100% 0 0)}
+.sl.active .strat img{animation:wipe 2.6s .2s cubic-bezier(.5,.1,.3,1) forwards}
+@keyframes wipe{to{clip-path:inset(0 0 0 0)}}
+.strat .lbl{position:relative;height:40px;margin-top:6px;text-align:center;font-size:18px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--g)}
+.strat .lbl span{position:absolute;top:0;width:300px;margin-left:-150px;white-space:nowrap;opacity:0}
+.strat .lbl span:nth-child(1){left:13%}.strat .lbl span:nth-child(2){left:31%}.strat .lbl span:nth-child(3){left:49%}.strat .lbl span:nth-child(4){left:66%}.strat .lbl span:nth-child(5){left:84%}
+.sl.active .strat .lbl span{animation:fadeUp .6s both}
+.sl.active .strat .lbl span:nth-child(1){animation-delay:.5s}.sl.active .strat .lbl span:nth-child(2){animation-delay:1s}.sl.active .strat .lbl span:nth-child(3){animation-delay:1.5s}.sl.active .strat .lbl span:nth-child(4){animation-delay:2s}.sl.active .strat .lbl span:nth-child(5){animation-delay:2.5s}
+
+.cycle{display:flex;justify-content:space-between;position:relative;margin:0 0 36px}
+.cycle::before{content:"";position:absolute;left:70px;right:70px;top:44px;height:6px;background:#dfe7e2;border-radius:3px}
+.node{position:relative;width:200px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px}
+.node i{width:92px;height:92px;border-radius:50%;background:#fff;border:6px solid #dfe7e2;display:grid;place-items:center;font-style:normal;font-weight:800;font-size:34px;color:#b5beb9;transition:.4s}
+.node span{font-size:18px;font-weight:700;color:#a5aca8;line-height:1.25;transition:.4s}
+.node.on i{background:var(--g);border-color:var(--g);color:#fff}
+.node.on span{color:var(--gray)}
+.node.cur i{transform:scale(1.15);box-shadow:0 0 0 10px rgba(41,106,77,.18)}
+.node.cur span{color:var(--ink)}
+.panels{position:relative;height:330px}
+.panel{position:absolute;inset:0;display:grid;grid-template-columns:360px 1fr;gap:56px;align-items:center}
+.panel.f.on:not(.cur){opacity:0;transform:translateY(-14px)}
+.panel .im{height:300px;display:grid;place-items:center}
+.panel .im img{max-width:100%;max-height:100%;filter:drop-shadow(0 16px 18px rgba(0,0,0,.25))}
+.panel h3{font-size:40px;font-weight:800;color:var(--g);margin:0 0 14px}
+.panel p{font-size:28px;color:var(--gray);margin:0}
+
+.free{display:grid;grid-template-columns:360px 1fr;gap:70px;align-items:center;margin-top:10px}
+.free .badge{width:340px;height:340px;border-radius:50%;background:var(--g);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;box-shadow:0 26px 50px -20px rgba(41,106,77,.7)}
+.sl.active .free .badge{animation:pop .7s cubic-bezier(.2,.9,.3,1.3) both}
+.free .badge b{font-size:74px;font-weight:800;letter-spacing:.06em}
+.free .badge span{font-size:21px;padding:0 44px;margin-top:6px}
+.checks{list-style:none;margin:0;padding:0}
+.checks li{display:flex;gap:20px;font-size:29px;color:var(--gray);margin-bottom:26px;align-items:flex-start}
+.checks li::before{content:"";flex:none;width:40px;height:40px;margin-top:1px;border-radius:50%;background:var(--g) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12l5 5 9-10'/%3E%3C/svg%3E") center/24px no-repeat}
+
+.phslide{padding:0}
+.phone{position:absolute;left:250px;top:36px;width:410px;height:820px;border:16px solid #1b1f1d;border-radius:58px;overflow:hidden;background:#fff;box-shadow:0 34px 60px -24px rgba(0,0,0,.5);z-index:1}
+.phone::before{content:"";position:absolute;top:0;left:50%;width:130px;height:28px;margin-left:-65px;background:#1b1f1d;border-radius:0 0 18px 18px;z-index:2}
+.phone>img{width:100%;height:100%;object-fit:cover;display:block}
+.phone.form-ph>img{position:absolute;left:0;top:0;width:175%;height:auto;object-fit:initial}
+.sl.active .phone.form-ph>img{animation:formPan 16s 1s ease-in-out infinite alternate}
+@keyframes formPan{0%{transform:none}45%{transform:translate(-42.8%,-3%)}100%{transform:translate(0,-15.8%)}}
+.sl.active .phone{animation:rise .9s cubic-bezier(.2,.8,.2,1) both}
+.phslide .side{position:absolute;left:740px;right:80px;top:260px}
+.phslide .h{font-size:72px}
+.phslide .list{list-style:none;margin:0;padding:0}
+.phslide .list li{font-size:36px;letter-spacing:.12em;text-transform:uppercase;color:var(--g);margin-bottom:10px}
+.phslide .list li::before{content:"• "}
+.phslide .checks li{font-size:25px;margin-bottom:14px}
+.phslide .checks li::before{width:32px;height:32px;background-size:20px}
+.phslide h4{margin:0 0 14px;font-size:20px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--g)}
+
+.goal{font-size:34px;color:var(--gray);margin:0 0 34px;max-width:1300px}
+.goal em{font-style:normal;font-weight:800;color:var(--g);border-bottom:4px solid #bfe39a}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;margin:0 0 34px}
+.kpis>div{background:var(--g);color:#fff;border-radius:24px;padding:28px 30px}
+.kpis .n{font-size:66px;font-weight:800;line-height:1.05}
+.kpis .l{font-size:20px;letter-spacing:.1em;text-transform:uppercase;opacity:.9;margin-top:6px}
+
+.testi .ph{position:absolute;border:10px solid #fff;border-radius:6px;box-shadow:0 24px 40px -18px rgba(0,0,0,.5);object-fit:cover;opacity:0}
+.sl.active.testi .ph{animation:pop .7s cubic-bezier(.2,.9,.3,1.2) both}
+.testi .ph:nth-of-type(2){animation-delay:.15s!important}.testi .ph:nth-of-type(3){animation-delay:.3s!important}.testi .ph:nth-of-type(4){animation-delay:.45s!important}
+.testi .h{font-size:92px;margin:0}
+.testi .sub{margin:4px 0 0}
+
+.stats{padding:0}
+.stats .lg2{position:absolute;left:290px;top:6px;display:flex;align-items:center}
+.stats .lg2 img:first-child{height:150px}
+.stats .lg2 img:last-child{height:170px;margin-left:-14px}
+.stats .ctry{position:absolute;left:610px;top:52px;font-size:56px;font-weight:800;letter-spacing:.04em;color:var(--g)}
+.stats .yr{position:absolute;left:990px;top:38px;font-size:64px;font-weight:900;font-style:italic;color:#fff;background:var(--g);padding:0 26px;border-radius:18px;transform:rotate(-4deg);box-shadow:0 12px 24px -12px rgba(0,0,0,.5)}
+.stats .rows{position:absolute;left:180px;top:200px;right:80px}
+.stats .r{display:grid;grid-template-columns:200px 430px 1fr;align-items:center;height:180px}
+.stats .r img{max-height:150px;max-width:170px;justify-self:center;filter:drop-shadow(0 10px 12px rgba(0,0,0,.18))}
+.stats .r .n{font-size:76px;font-weight:800;color:var(--g);font-variant-numeric:tabular-nums;letter-spacing:.02em}
+.stats .r .l{font-size:42px;letter-spacing:.08em;color:var(--g);text-transform:uppercase}
+
+.imag{display:grid;grid-template-columns:540px 1fr;gap:80px;align-items:center}
+.rings{position:relative;width:540px;height:540px}
+.ring{position:absolute;left:50%;top:50%;border-radius:50%;transform:translate(-50%,-50%) scale(.3);opacity:0;transition:transform .7s cubic-bezier(.2,.9,.3,1.2),opacity .5s;display:flex;justify-content:center;padding-top:22px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;font-size:20px;color:#fff}
+.ring.on{transform:translate(-50%,-50%);opacity:1}
+.ring:nth-child(1){width:540px;height:540px;background:#bfe39a;color:var(--g)}
+.ring:nth-child(2){width:370px;height:370px;background:var(--g2)}
+.ring:nth-child(3){width:200px;height:200px;background:var(--g);align-items:center;padding:0;font-size:24px}
+.imag ol{margin:0;padding:0;list-style:none}
+.imag li{font-size:33px;font-weight:600;color:var(--gray);margin-bottom:30px}
+.imag li b{color:var(--g)}
+
+.calm{display:flex;flex-direction:column;align-items:center;text-align:center;padding-top:150px}
+.calm .h{margin-bottom:30px}
+.calm p{font-size:34px;color:var(--gray);margin:0 0 12px}
+.calm .cdw{margin-top:34px}
+.calm .cd{width:150px;height:150px}
+.calm .cd b{font-size:38px}
+
+.steps4{display:grid;grid-template-columns:repeat(4,1fr);gap:26px;margin-top:20px}
+.steps4>div{background:#fff;border-radius:26px;padding:30px 28px;box-shadow:0 18px 36px -20px rgba(0,0,0,.4);border:2px solid var(--gx)}
+.steps4 .k{width:62px;height:62px;border-radius:50%;background:var(--g);color:#fff;display:grid;place-items:center;font-size:28px;font-weight:800}
+.steps4 h4{margin:18px 0 10px;font-size:27px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--g)}
+.steps4 p{margin:0;font-size:26px;color:var(--gray);line-height:1.4}
+
+.team{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:28px;margin-bottom:28px}
+.team>div{background:#fff;border-radius:26px;padding:30px;box-shadow:0 18px 36px -20px rgba(0,0,0,.4);border:2px solid var(--gx)}
+.team h4{margin:0 0 16px;font-size:26px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--g)}
+.team ul{margin:0;padding-left:24px}
+.team li{font-size:26px;color:var(--gray);margin-bottom:10px;line-height:1.4}
+.team .att{display:inline-block;margin-top:10px;font-size:15px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;background:var(--gx);color:var(--g);border-radius:999px;padding:7px 14px}
+
+.pj-wrap{display:flex;gap:40px;align-items:flex-start;margin-top:30px}
+table.pj{border-collapse:collapse;font-size:38px;margin-left:120px}
+table.pj th{background:var(--navy);color:#fff;font-size:20px;letter-spacing:.12em;text-transform:uppercase;padding:18px 44px;font-weight:700;border:3px solid var(--navy)}
+table.pj th:first-child{background:transparent;border:0}
+table.pj td{padding:22px 44px;text-align:center;font-weight:800;color:var(--navy);border:3px solid var(--navy);background:#fff}
+table.pj td:first-child{border:0;text-align:left;font-weight:500;color:var(--navy);padding-left:0;background:transparent;font-size:36px;letter-spacing:.04em}
+table.pj tbody tr{opacity:0}
+.sl.active table.pj tbody tr{animation:fadeUp .5s both}
+.sl.active table.pj tbody tr:nth-child(2){animation-delay:.2s}
+.sl.active table.pj tbody tr:nth-child(3){animation-delay:.4s}
+
+.dates{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-bottom:40px}
+.dates>div{background:var(--g);color:#fff;border-radius:26px;padding:32px}
+.dates svg{width:54px;height:54px;color:#c9ec9c}
+.dates .l{font-size:19px;letter-spacing:.14em;text-transform:uppercase;opacity:.85;margin:14px 0 8px}
+.dates .v{font-size:34px;font-weight:800;line-height:1.2;word-break:break-word}
+
+.gna{display:grid;grid-template-columns:1fr 500px;gap:70px;align-items:start}
+.gna p{font-size:28px;color:var(--gray);margin:0 0 24px}
+.gna p em{font-style:normal;font-weight:800;color:var(--g)}
+.gna blockquote{margin:0;background:var(--g);color:#fff;border-radius:26px;padding:36px 40px;font-size:30px;line-height:1.45;font-style:italic}
+.gna blockquote cite{display:block;margin-top:16px;font-style:normal;font-size:19px;letter-spacing:.14em;text-transform:uppercase;color:#c9ec9c}
+
+#black{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;transition:opacity .4s;z-index:20}
+#black.on{opacity:1}
+#hint{position:absolute;left:50%;bottom:24px;transform:translateX(-50%);background:rgba(20,22,24,.88);color:#fff;font:600 15px var(--font);padding:12px 20px;border-radius:999px;z-index:30;transition:opacity .5s;white-space:nowrap}
+#hint.off{opacity:0;pointer-events:none}
+
+#launch{min-height:100%;align-items:center;justify-content:center;padding:40px 20px;background:radial-gradient(1200px 600px at 20% 0%,#1d3a2c,#0f1113 60%);color:#eef2ea}
+.lw{max-width:860px;width:100%}
+.lw .kick{font-size:13px;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:#a6dd7a}
+.lw h1{font-size:44px;font-weight:800;margin:10px 0 8px;line-height:1.1}
+.lw>p{color:#b9c2b2;font-size:17px;margin:0 0 30px;line-height:1.5}
+.how{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px}
+.how div{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:18px;font-size:14.5px;line-height:1.5;color:#cfd6c9}
+.how b{display:block;color:#fff;font-size:15px;margin-bottom:6px}
+.btns{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:26px}
+.btn{border-radius:14px;padding:16px 22px;font-size:16px;font-weight:700;background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.14);text-align:left}
+.btn:hover{background:rgba(255,255,255,.14)}
+.btn.pri{background:#7cc54d;border-color:#7cc54d;color:#0d1a06}
+.btn.pri:hover{background:#8dd35e}
+.btn small{display:block;font-weight:500;font-size:12.5px;opacity:.75;margin-top:3px}
+.keys{font-size:13.5px;color:#9aa594;line-height:1.9}
+kbd{font:600 12px var(--font);background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-bottom-width:2px;border-radius:6px;padding:2px 7px;color:#e6ece1}
+#popWarn{background:#3a2a12;border:1px solid #6b4c1c;color:#f3d9a8;border-radius:12px;padding:12px 16px;font-size:14px;margin-bottom:18px;display:none}
+
+#console{position:fixed;inset:0;grid-template-rows:auto 1fr auto;background:#14171a;color:#e8ece5;font-size:15px}
+#console header{display:flex;align-items:center;gap:18px;padding:12px 18px;border-bottom:1px solid #262b30;flex-wrap:wrap}
+.clk{display:flex;align-items:baseline;gap:8px}
+.clk b{font-size:38px;font-weight:800;font-variant-numeric:tabular-nums}
+.clk small{font-size:16px;color:#8c9590;font-weight:600}
+#cPace{font-weight:700;padding:7px 14px;border-radius:999px;background:#22272c;font-size:14px}
+#cPace.ok{background:#1f3a1a;color:#a9e07e}#cPace.late{background:#4a1f1c;color:#ffb3a8}#cPace.early{background:#1d3046;color:#a8cdf6}
+#cNow{color:#8c9590;font-weight:600;font-variant-numeric:tabular-nums}
+.hb{display:flex;gap:8px;margin-left:auto;flex-wrap:wrap}
+.cb{background:#22272c;color:#e8ece5;border:1px solid #30363c;border-radius:10px;padding:9px 13px;font-size:13.5px;font-weight:700}
+.cb:hover{background:#2b3137}
+.cb.on{background:#7cc54d;color:#0d1a06;border-color:#7cc54d}
+#cLink{font-size:13px;font-weight:700;color:#ff9d8f}
+#cLink.ok{color:#9fdc77}
+#console main{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:16px;padding:16px 18px;min-height:0}
+.colL,.colR{display:flex;flex-direction:column;gap:10px;min-height:0}
+.lab{font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#8c9590;display:flex;justify-content:space-between;gap:10px}
+.lab span{letter-spacing:.04em;text-transform:none;color:#c7cec2}
+.pv{border-radius:10px;background:#000;aspect-ratio:16/9;width:100%;box-shadow:0 0 0 1px #2a3036}
+#pvCur{cursor:pointer;box-shadow:0 0 0 3px #7cc54d}
+#pvNextW{width:62%}
+#cSlideT{display:flex;gap:14px;align-items:center;font-size:14px;color:#c7cec2}
+#cSlideT .bar{flex:1;height:8px;background:#262b30;border-radius:4px;overflow:hidden}
+#cSlideT .bar i{display:block;height:100%;background:#7cc54d;width:0}
+#cTools:empty{display:none}
+#cTools{background:#1b1f23;border:1px solid #2a3036;border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.tr{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tr .big{font-size:28px;font-weight:800;font-variant-numeric:tabular-nums;min-width:90px}
+.tr label{flex:1;font-weight:600;color:#c7cec2;font-size:14px}
+.tr input{width:72px;background:#0f1214;border:1px solid #30363c;color:#fff;border-radius:8px;padding:7px;font:700 16px var(--font);text-align:center}
+.tr .wv{color:#ffcf8a;font-size:13.5px;font-weight:600;width:100%}
+#cNotes{flex:1;overflow:auto;background:#1b1f23;border:1px solid #2a3036;border-radius:12px;padding:16px 20px;font-size:19px;line-height:1.55;min-height:120px}
+#cNotes p{margin:0 0 12px}
+#cNotes ul{margin:0 0 12px;padding-left:22px}
+#cNotes b{color:#b9e48f}
+#cNotes .tip{font-size:15px;color:#9aa594;border-top:1px solid #2a3036;padding-top:10px;margin-top:6px}
+#console footer{display:flex;gap:6px;padding:10px 18px 14px;border-top:1px solid #262b30;overflow-x:auto}
+.blk{flex:1 1 0;min-width:120px;background:#1b1f23;border:1px solid #2a3036;border-radius:10px;padding:8px 10px;cursor:pointer;text-align:left;color:inherit;font:inherit}
+.blk.cur{border-color:#7cc54d;background:#1f2a1b}
+.blk.opt{opacity:.65;border-style:dashed}
+.blk .s{font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#8c9590;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.blk .n{font-size:13px;font-weight:700;margin:2px 0 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.blk .tm{font-size:12.5px;font-variant-numeric:tabular-nums;color:#c7cec2;display:flex;justify-content:space-between}
+.blk .pb{height:5px;background:#2a3036;border-radius:3px;margin-top:5px;overflow:hidden}
+.blk .pb i{display:block;height:100%;width:0;background:#7cc54d}
+.blk .pb i.warn{background:#e8b04a}.blk .pb i.over{background:#ef6b5b}
+#cGo{background:#22272c;color:#e8ece5;border:1px solid #30363c;border-radius:10px;padding:8px;font:600 13px var(--font);max-width:240px}
+
+dialog{border:0;border-radius:18px;padding:0;max-width:720px;width:calc(100% - 32px);background:#1b1f23;color:#e8ece5;font-family:var(--font)}
+dialog::backdrop{background:rgba(0,0,0,.6)}
+dialog form{padding:24px 26px;max-height:85vh;overflow:auto}
+dialog h3{font-size:22px;font-weight:800;margin:0 0 4px}
+dialog .dsub{color:#9aa594;font-size:14px;margin:0 0 18px}
+dialog h4{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#a6dd7a;margin:22px 0 10px}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:10px 16px}
+.fg label{display:flex;flex-direction:column;gap:5px;font-size:13px;font-weight:600;color:#c7cec2}
+.fg label.w{grid-column:1/-1}
+.provpick{grid-column:1/-1;display:flex;flex-direction:column;gap:8px;font-size:13px;font-weight:600;color:#c7cec2}
+.provpick>div{display:flex;flex-wrap:wrap;gap:6px}
+.provpick label{display:flex;flex-direction:row;align-items:center;gap:6px;background:#0f1214;border:1px solid #30363c;border-radius:999px;padding:6px 12px;font-weight:600;cursor:pointer}
+.provpick label:has(input:checked){background:#1f3a1a;border-color:#7cc54d;color:#d6f5bd}
+.provpick input{accent-color:#7cc54d;margin:0}
+.fg input{background:#0f1214;border:1px solid #30363c;color:#fff;border-radius:9px;padding:10px 12px;font:500 15px var(--font)}
+.dact{display:flex;gap:10px;justify-content:flex-end;margin-top:22px;position:sticky;bottom:-24px;background:#1b1f23;padding:12px 0}
+#sala{position:absolute;inset:0;z-index:40;display:none;align-items:center;justify-content:center;background:rgba(255,255,255,.97);font-family:var(--font);color:var(--ink);padding:4vh 4vw}
+#sala.on{display:flex}
+#sala .sc{display:flex;gap:5vw;align-items:center;max-width:1300px}
+#salaQr{width:min(38vh,38vw);height:min(38vh,38vw);flex:none;background:#fff;border-radius:24px;padding:14px;box-shadow:0 20px 50px -20px rgba(0,0,0,.35)}
+#salaQr svg{width:100%;height:100%;display:block}
+#sala small{font-size:clamp(12px,1.6vh,18px);font-weight:800;letter-spacing:.22em;text-transform:uppercase;color:var(--g)}
+#sala h3{font-size:clamp(26px,5vh,56px);font-weight:800;color:var(--g);margin:6px 0 18px}
+#sala ol{margin:0 0 22px;padding-left:1.2em;font-size:clamp(16px,2.6vh,28px);line-height:1.6;color:var(--gray)}
+#sala .code{font-size:clamp(16px,2.6vh,28px);color:var(--gray)}
+#sala .code b{font-size:clamp(28px,5vh,56px);letter-spacing:.12em;color:var(--ink);margin-left:8px}
+#salaSt{margin-top:12px;font-size:clamp(13px,1.8vh,18px);font-weight:600;color:var(--muted)}
+#salaMini{position:absolute;right:14px;bottom:14px;z-index:41;display:none;background:rgba(20,22,24,.85);color:#fff;font:600 13px var(--font);padding:8px 14px;border-radius:999px}
+#salaMini.on{display:block}
+#mnav{display:none}
+body.ctl #console{grid-template-rows:auto 1fr auto;grid-template-columns:minmax(0,1fr);height:100dvh;width:100vw;overflow:hidden}
+body.ctl #console header>*,body.ctl #console main>*,body.ctl .colL>*,body.ctl .colR>*{min-width:0;max-width:100%}
+body.ctl .colL,body.ctl .colR{width:100%}
+body.ctl .hb .cb{min-width:0;white-space:nowrap}
+body.ctl #console header{gap:8px 10px;padding:8px 10px}
+body.ctl .clk b{font-size:24px}
+body.ctl #cPace{font-size:12px;padding:5px 10px}
+body.ctl #cNow,body.ctl #cReset,body.ctl #cOpen,body.ctl #cAgenda,body.ctl #pvNextW,body.ctl .colR>.lab:first-child{display:none}
+body.ctl .hb{margin-left:0;width:100%;gap:6px}
+body.ctl .hb .cb{flex:1;padding:11px 6px;font-size:13px}
+body.ctl #cGo{flex:1 1 100%;width:100%;box-sizing:border-box;max-width:none;padding:11px;font-size:14px}
+body.ctl #mnav button{white-space:nowrap;font-size:19px}
+body.ctl #console main{display:flex;flex-direction:column;padding:10px;gap:10px;overflow:auto}
+body.ctl .colL,body.ctl .colR{min-height:auto}
+body.ctl #cNotes{flex:none;font-size:18px;min-height:140px}
+body.ctl #mnav{display:grid;grid-template-columns:1fr 1.7fr;gap:10px;padding:10px 10px calc(10px + env(safe-area-inset-bottom));border-top:1px solid #262b30;background:#14171a}
+#mnav button{border:0;border-radius:18px;font:800 21px var(--font);padding:24px 10px;background:#2b3137;color:#fff;touch-action:manipulation}
+#mnav button:active{transform:scale(.97)}
+#mnav #mNext{background:#7cc54d;color:#0d1a06}
+@media (max-width:760px){.how{grid-template-columns:1fr}.fg{grid-template-columns:1fr}#console main{grid-template-columns:1fr}}
+</style>
+</head>
+<body class="home">
+
+<div id="launch">
+  <div class="lw">
+    <div class="kick">Operation Christmas Child · Equipo Huaraz · Sierra de Áncash</div>
+    <h1>Presentación de la Visión</h1>
+    <p>Temporada 2026-2027 · Todo se trata de Jesús. 70 minutos en 4 secciones, con el tiempo de cada bloque según la agenda del manual. El público solo ve las diapositivas. Las notas del entrenador, los tiempos y el control de los videos se quedan en tu laptop.</p>
+    <div class="how">
+      <div><b>1. Conecta el proyector</b>Como pantalla extendida (no duplicada) para que tu laptop muestre otra cosa.</div>
+      <div><b>2. Abre el modo presentador</b>Se abre una ventana de proyección: arrástrala al proyector y presiona <kbd>F</kbd> (también habilita el audio de los videos).</div>
+      <div><b>3. Presenta desde aquí</b>Esta ventana queda en tu laptop con notas, siguiente diapositiva y cronómetro.</div>
+    </div>
+    <div id="webOnly" style="display:none;color:#ffcf8a;font-size:14px;margin:-12px 0 18px">El control desde el celular funciona cuando la presentación se abre desde su dirección web (no desde un archivo).</div>
+    <div id="popWarn">El navegador bloqueó la ventana de proyección. Permite las ventanas emergentes para este archivo y vuelve a intentarlo.</div>
+    <div class="btns">
+      <button class="btn pri" id="bSala">Proyectar y manejar desde el celular<small>Esta laptop proyecta · el celular controla</small></button>
+      <button class="btn" id="bPres">Modo presentador en la laptop<small>Proyector sin notas + consola con notas</small></button>
+      <button class="btn" id="bAud">Solo diapositivas<small>Sin notas ni consola</small></button>
+      <button class="btn" id="bCfg">Personalizar datos<small>País, cifras, metas y fechas</small></button>
+    </div>
+    <div class="keys">
+      <kbd>→</kbd> <kbd>Espacio</kbd> <kbd>Av Pág</kbd> avanzar · <kbd>←</kbd> <kbd>Re Pág</kbd> retroceder · <kbd>V</kbd> reproducir/pausar video · <kbd>B</kbd> pantalla negra · <kbd>F</kbd> pantalla completa (en el proyector) · <kbd>P</kbd> pausar cronómetro · <kbd>G</kbd> ir a diapositiva. Funciona con presentadores inalámbricos (clickers).
+    </div>
+  </div>
+</div>
+
+<div id="console">
+  <header>
+    <div class="clk"><b id="cTotal">00:00</b><small>/ 70:00</small></div>
+    <div id="cPace">Sin iniciar</div>
+    <div id="cNow"></div>
+    <span id="cLink">● Proyector desconectado</span>
+    <div class="hb">
+      <button class="cb" id="cRun">▶ Iniciar (P)</button>
+      <button class="cb" id="cReset">Reiniciar tiempos</button>
+      <button class="cb" id="cBlack">Pantalla negra (B)</button>
+      <button class="cb" id="cOpen">Abrir proyector</button>
+      <button class="cb" id="cCfg">Datos</button>
+      <select id="cGo" title="Ir a (G)"></select>
+    </div>
+  </header>
+  <main>
+    <div class="colL">
+      <div class="lab">Proyectándose <span id="cPos"></span></div>
+      <div class="pv frame" id="pvCur"></div>
+      <div id="cSlideT"><span id="cSlideTxt"></span><div class="bar"><i></i></div></div>
+    </div>
+    <div class="colR">
+      <div class="lab">Siguiente <span id="cNextT"></span></div>
+      <div id="pvNextW"><div class="pv frame" id="pvNext"></div></div>
+      <div id="cTools"></div>
+      <div class="lab">Notas del entrenador <span>solo visibles aquí</span></div>
+      <div id="cNotes"></div>
+    </div>
+  </main>
+  <footer id="cAgenda"></footer>
+  <nav id="mnav"><button id="mPrev">◀ Anterior</button><button id="mNext">Siguiente ▶</button></nav>
+</div>
+
+<dialog id="dCfg"><form method="dialog" id="fCfg"></form></dialog>
+
+<div id="view" class="frame">
+  <div class="stage" id="stage">
+    <div id="deck">
+
+<section class="sl cover" data-b="intro" data-sug="1" data-title="Portada">
+  <div class="lg"><img src="img/logo-jesus.png" alt=""><img src="img/logo-occ.png" alt=""></div>
+  <img class="m1" src="img/montanas-portada.png" alt="">
+  <img class="m2" src="img/montanas.png" alt="">
+  <div class="tt"><span>Presentación</span><b>DE VISIÓN</b></div>
+  <div class="who"><span data-cfg="coordinador"></span><span data-cfg="sede_tag" data-hide-empty></span></div>
+  <aside class="notes">
+    <p>Preséntense y den la bienvenida a todos los participantes.</p>
+    <ul>
+      <li>Dé la bienvenida a quienes asisten <b>por primera vez</b>.</li>
+      <li>Reconozca y celebre a los Compañeros de Ministerio que <b>ya participaron</b> (pida que levanten la mano).</li>
+      <li>OCC se trata de <b>evangelismo, discipulado y multiplicación</b>, y estamos comprometidos a proteger y salvaguardar a los niños en todo lo que hacemos.</li>
+      <li>El propósito de hoy: compartir la visión de OCC y dar la oportunidad de aplicar si el Espíritu Santo los guía.</li>
+    </ul>
+    <p><b>Abra con oración</b> (considere pedirle a un pastor que ore). <b>Opcional:</b> un tiempo de alabanza.</p>
+    <p class="tip">Siguiente: video "Reseña de OCC 2026" (3:57). Materiales: Folletos para Compañeros de Ministerio.</p>
+  </aside>
+</section>
+
+<section class="sl video" data-b="intro" data-sug="4" data-title="Video: Reseña de OCC 2026">
+  <video class="vid" src="video/resena-occ-2026.mp4" poster="img/resena-poster.jpg" preload="none" playsinline></video>
+  <aside class="notes">
+    <p><b>Video de 3:57.</b> Presiona <b>V</b> o el botón del panel para reproducir. Si no se oye, haz un clic en la ventana del proyector y vuelve a intentarlo.</p>
+    <p>Al terminar, conecte con la historia: Samaritan's Purse adoptó OCC en 1993, bajo el liderazgo de Franklin Graham. Desde entonces, decenas de millones de cajitas, el Evangelio y el discipulado han llegado a niños en <b>más de 150 países</b>.</p>
+    <p><b>Nuestra oración hoy</b> es que usted le pregunte a Dios cómo puede participar con OCC.</p>
+  </aside>
+</section>
+
+<section class="sl mt lg" data-b="mision" data-sug="5" data-title="Nuestra misión">
+  <h2 class="h" style="text-align:center">Nuestra <b>misión</b></h2>
+  <div class="mission">
+    <div class="f pop">Demostrar el amor de Dios de una manera tangible a los niños necesitados</div>
+    <div class="f pop">Junto con la iglesia local</div>
+    <div class="f pop">Compartir las Buenas Nuevas de Jesucristo</div>
+    <div class="f pop">Discipular niños</div>
+    <div class="f pop">Multiplicar el Evangelio y el Discipulado</div>
+  </div>
+  <aside class="notes">
+    <p>La misión tiene <b>5 componentes</b> que muestran cómo implementamos el ministerio. Cada clic muestra uno.</p>
+    <p><b>Punto clave:</b> el corazón de OCC es el evangelismo, el discipulado y la multiplicación del Evangelio, todo a través de la iglesia local y los ministerios cristianos.</p>
+    <p><b>Actividad opcional:</b> pida a Compañeros de Ministerio de temporadas anteriores que compartan un aspecto de la misión.</p>
+  </aside>
+</section>
+
+<section class="sl mt lg hero" data-b="porque" data-sug="0.5" data-title="¿Por qué alcanzar a los niños?">
+  <img src="img/por-que-ninos.jpg" alt="">
+  <h2 class="h">¿Por qué alcanzar a los <b>niños?</b></h2>
+  <aside class="notes">
+    <p>Transición. Diga: "Antes de responder, hagamos un ejercicio juntos".</p>
+  </aside>
+</section>
+
+<section class="sl mt lg poll" data-b="porque" data-sug="2.5" data-title="¿Cuándo conociste a Jesús? (encuesta)">
+  <h2 class="h">¿Cuándo conociste <b>a Jesús?</b></h2>
+  <p class="sub">Ponte de pie si conociste a Jesús y lo seguiste…</p>
+  <div>
+    <div class="row f"><div class="pl">…antes de los 5 años</div><div class="track"><div class="bar" data-k="0"></div></div><div class="val" data-v="0">0</div></div>
+    <div class="row f"><div class="pl">…antes de los 10 años</div><div class="track"><div class="bar" data-k="1"></div></div><div class="val" data-v="1">0</div></div>
+    <div class="row f"><div class="pl">…antes de los 15 años</div><div class="track"><div class="bar" data-k="2"></div></div><div class="val" data-v="2">0</div></div>
+  </div>
+  <div class="ask f"><div class="q">?</div>¿A qué edad conocieron a Jesús la mayoría de ustedes?</div>
+  <aside class="notes">
+    <p>En cada clic pida que se pongan de pie o levanten la mano. <b>Cuente y escriba el número</b> en el panel de arriba: la barra se actualiza en vivo en el proyector.</p>
+    <p><b>Punto clave:</b> la mayoría de las personas se convierten en seguidores de Jesús <b>antes de los 15 años</b>. Son los más abiertos a escuchar el Evangelio, responder con fe y compartirlo con otros.</p>
+  </aside>
+</section>
+
+<section class="sl lg verse withq" data-b="porque" data-sug="2" data-title="Marcos 10:13-16">
+  <h3>MARCOS 10:13-16</h3>
+  <p><sup>13</sup> Empezaron a llevarle niños a Jesús para que los tocara, pero los discípulos reprendían a quienes los llevaban. <sup>14</sup> Cuando Jesús se dio cuenta, se indignó y dijo: «Dejen que los niños vengan a mí; no se lo impidan, porque el reino de Dios es de quienes son como ellos. <sup>15</sup> Les aseguro que el que no reciba el reino de Dios como un niño, de ninguna manera entrará en él». <sup>16</sup> Y después de abrazarlos, los bendecía poniendo las manos sobre ellos.</p>
+  <img class="cm" src="img/comillas.png" alt="">
+  <div class="side">
+    <div class="qc f"><small>Pregunta</small>¿Cuán importantes son los niños para Jesús?</div>
+    <div class="qc f"><small>Pregunta</small>¿Por qué es importante mantener a los niños seguros?</div>
+  </div>
+  <aside class="notes">
+    <p>Lea Marcos 10:13-16 y luego haga las preguntas (un clic para cada una).</p>
+    <p><b>Punto clave:</b> Jesús quiere que los niños lo conozcan y nos desafía a recibir Su reino como un niño.</p>
+  </aside>
+</section>
+
+<section class="sl lg verse withq" data-b="porque" data-sug="5" data-title="2 Corintios 5:20 · en parejas">
+  <h3>2 CORINTIOS 5:20</h3>
+  <p style="font-size:38px">Así que somos embajadores de Cristo, como si Dios los exhortara a ustedes por medio de nosotros: «En nombre de Cristo les rogamos que se reconcilien con Dios».</p>
+  <img class="cm" src="img/comillas.png" alt="">
+  <div class="side" style="top:200px">
+    <div class="qc f"><small>En parejas</small>¿Quién es un embajador para usted?</div>
+    <div class="qc f"><small>En parejas</small>Como líder, ¿qué hace para levantar embajadores para Cristo en su iglesia?</div>
+  </div>
+  <aside class="notes">
+    <p>Lea 2 Corintios 5:20 e invite a los participantes a formar <b>parejas por unos 4 minutos</b> para conversar las preguntas. Avise cuando falte un minuto (el tiempo del slide aparece abajo de la vista previa).</p>
+    <p><b>Punto clave al cerrar:</b> cada generación en cada comunidad debe formar a la próxima generación de creyentes.</p>
+  </aside>
+</section>
+
+<section class="sl mt lg" data-b="estrategia" data-sug="2" data-title="Nuestra estrategia">
+  <h2 class="h">Nuestra <b>estrategia</b></h2>
+  <div class="strat">
+    <img src="img/estrategia.png" alt="">
+    <div class="lbl"><span>Folleto y Guía</span><span>El Mejor Regalo</span><span>Cajitas</span><span>La Gran Aventura</span><span>Certificado y NT</span></div>
+  </div>
+  <aside class="notes">
+    <p>En OCC estamos comprometidos con el evangelismo, el discipulado y la multiplicación en todo el mundo, <b>pero no podemos hacerlo solos</b>.</p>
+    <p>Los <b>Compañeros de Ministerio</b> son iglesias locales y ministerios cristianos que presentan el Evangelio en un Evento Evangelístico y enseñan a los niños a seguir a Jesús con La Gran Aventura (LGA).</p>
+    <p><b>Muestre físicamente cada material</b> mientras la flecha avanza.</p>
+    <p class="tip">Materiales: Reporte de la temporada pasada, Folletos para CM, Solicitud, Guía Ministerial, Pósters del Evangelio, El Mejor Regalo, Libro de LGA, Certificado y Nuevo Testamento.</p>
+  </aside>
+</section>
+
+<section class="sl video" data-b="estrategia" data-sug="3" data-title="Video: el recorrido de la cajita">
+  <video class="vid" src="video/ciclo-ministerial.mp4" poster="img/ciclo-poster.jpg" preload="none" playsinline></video>
+  <aside class="notes">
+    <p><b>Video de 2:44</b> con el recorrido completo: empacado, envío, capacitación, evento, discipulado y graduación. Presiona <b>V</b> para reproducir.</p>
+  </aside>
+</section>
+
+<section class="sl mt lg" data-b="estrategia" data-sug="5" data-title="Su parte como Compañero de Ministerio (6 pasos)">
+  <h2 class="h">Su parte como <b>Compañero</b></h2>
+  <div class="cycle">
+    <div class="node" data-at="1"><i>1</i><span>Visión y solicitud</span></div>
+    <div class="node" data-at="2"><i>2</i><span>Capacitación</span></div>
+    <div class="node" data-at="3"><i>3</i><span>Planificación y entrega</span></div>
+    <div class="node" data-at="4"><i>4</i><span>Evento Evangelístico</span></div>
+    <div class="node" data-at="5"><i>5</i><span>La Gran Aventura</span></div>
+    <div class="node" data-at="6"><i>6</i><span>Celebración y reporte</span></div>
+  </div>
+  <div class="panels">
+    <div class="panel f"><div class="im"><img src="img/guia-folleto.png" alt=""></div><div><h3>Visión, solicitud y selección</h3><p>Hoy recibe una <b>solicitud</b>. El equipo de OCC revisa cada una y selecciona a los Compañeros de Ministerio.</p></div></div>
+    <div class="panel f"><div class="im"><img src="img/guia-folleto.png" alt=""></div><div><h3>Capacitación de OCC</h3><p>Su <b>Equipo Ministerial</b> aprende a movilizar oración, organizar un evento seguro, presentar el Evangelio y discipular.</p></div></div>
+    <div class="panel f"><div class="im"><img src="img/cajitas.png" alt=""></div><div><h3>Planificación y Día de Entrega</h3><p>Movilizan <b>Compañeros de Oración</b> y voluntarios, y recogen las cajitas y los materiales.</p></div></div>
+    <div class="panel f"><div class="im"><img src="img/el-mejor-regalo.png" alt=""></div><div><h3>Evento Evangelístico</h3><p>Los niños escuchan el Evangelio y reciben una <b>cajita de regalo</b> y <b>El Mejor Regalo</b>.</p></div></div>
+    <div class="panel f"><div class="im"><img src="img/gran-aventura.png" alt=""></div><div><h3>La Gran Aventura</h3><p><b>12 lecciones</b> para conocer, crecer y compartir el Evangelio. Los graduados reciben un certificado y un Nuevo Testamento.</p></div></div>
+    <div class="panel f"><div class="im"><img src="img/certificado-nt.png" alt=""></div><div><h3>Celebración y reporte</h3><p>Después de la graduación, cada Compañero entrega un <b>informe</b> para celebrar lo que Dios hizo.</p></div></div>
+  </div>
+  <aside class="notes">
+    <p>Resuma lo que vieron en el video desde el rol del Compañero de Ministerio. Cada clic avanza un paso.</p>
+    <ul>
+      <li><b>Selección:</b> el equipo de voluntarios (ENL, ERLE, ERL) elige según la alineación con el evangelismo, el discipulado y la multiplicación, y la disponibilidad de cajitas.</li>
+      <li><b>La Gran Aventura:</b> tres secciones, Conoce, Crece y Comparte el Evangelio.</li>
+    </ul>
+  </aside>
+</section>
+
+<section class="sl mt lg" data-b="estrategia" data-sug="3" data-title="Todo es gratis (valores)">
+  <h2 class="h">Todo es <b>gratis</b></h2>
+  <div class="free">
+    <div class="badge"><b>GRATIS</b><span>Cajitas y materiales sin costo para su ministerio</span></div>
+    <ul class="checks">
+      <li class="f">Nadie paga por cajitas ni materiales. Nunca se pide ni se acepta dinero en efectivo.</li>
+      <li class="f">Las cajitas no se abren, dividen, venden ni intercambian.</li>
+      <li class="f">Nunca se usan a cambio de materiales o influencia política.</li>
+    </ul>
+  </div>
+  <aside class="notes">
+    <p><b>Declaración de recursos:</b> los Compañeros de Ministerio deben aceptar:</p>
+    <ul>
+      <li>A ningún niño, familia o iglesia se le pedirá que pague por cajitas o materiales de discipulado.</li>
+      <li>Nunca será solicitado o aceptado dinero en efectivo.</li>
+      <li>Las cajitas y la literatura son un regalo gratuito para los niños: nunca serán vendidas, alteradas o intercambiadas por materiales o influencia política. Nunca serán abiertas, divididas o vendidas, ni intercambiadas por otros servicios.</li>
+    </ul>
+    <p class="tip">Fuente: Valores fundamentales de OCC, carpeta Temporada 2026/2027 (último valor).</p>
+    <p><b>Tome unos minutos para responder preguntas.</b></p>
+    <p><b>Punto clave:</b> OCC colabora con la iglesia local con un profundo compromiso de proteger y brindar seguridad a los niños.</p>
+  </aside>
+</section>
+
+<section class="sl mt lg" data-b="estrategia" data-sug="2" data-title="Donación en especie (voluntaria)">
+  <h2 class="h">Donación <b>en especie</b></h2>
+  <p class="sub">Voluntaria · si desea sembrar en este ministerio</p>
+  <div class="steps4">
+    <div class="f"><div class="k">1</div><h4>Almacén</h4><p>Para guardar los materiales.</p></div>
+    <div class="f"><div class="k">2</div><h4>Voluntarios</h4><p>Para descargar el contenedor de cajas y literatura.</p></div>
+    <div class="f"><div class="k">3</div><h4>Transporte</h4><p>Para trasladar los materiales.</p></div>
+    <div class="f"><div class="k">4</div><h4>Espacios</h4><p>Para desarrollar la capacitación.</p></div>
+  </div>
+  <p class="key f" style="margin-top:30px">También útiles, agua, limpieza y tinta. <b>Se lleva al almacén al recoger sus materiales.</b></p>
+  <aside class="notes">
+    <p>Aclare que <b>no es obligatorio</b>: las capacitaciones y los materiales son gratuitos y no se da dinero de ninguna manera. Pero quien quiera sembrar puede hacerlo con una donación en especie.</p>
+    <p>Los voluntarios para la descarga van cuando el Coordinador de Logística les indique, <b>con sus propios pasajes y alimentos</b>.</p>
+    <p><b>Lista completa de materiales (hoja "Donación en Especie 2026-2027"):</b></p>
+    <ul>
+      <li>Pioner A4 universal · paquete de micas A4 · archivadores</li>
+      <li>Paquete de 20 rollos de papel higiénico · 3 frascos de jabón líquido para manos</li>
+      <li>1 caja de agua y 1 paquete de agua personal San Mateo (con o sin gas)</li>
+      <li>1 caja de marcadores indelebles negro y/o azul · 1 rollo de film para embalaje</li>
+      <li>Tinta para impresora Epson L499 (solo amarillo, rosado y azul)</li>
+    </ul>
+    <p>Entregue la hoja: cada iglesia anota qué donará.</p>
+  </aside>
+</section>
+
+<section class="sl mt big lg phslide" data-b="ninos" data-sug="0.5" data-title="¿A qué niños invitaremos?">
+  <div class="phone"><img src="img/nino-invitar.jpg" alt=""></div>
+  <div class="side" style="top:290px;text-align:center;left:620px"><h2 class="h">¿A qué<br><b>niños</b><br>invitaremos?</h2></div>
+  <aside class="notes">
+    <p>Resalte lo que encontró sobre las necesidades y oportunidades de su región ("Conozca su región", pág. 8 del manual).</p>
+    <p>Su preparación demuestra preocupación por los perdidos, anima a los CM a ver las necesidades a su alrededor y le permite hablar con confianza y pasión.</p>
+  </aside>
+</section>
+
+<section class="sl video" data-b="ninos" data-sug="2" data-title="Video: viaje hasta los Chapra (Perú)">
+  <video class="vid" data-subs="viaje" src="video/viaje-chapra.mp4" poster="img/viaje-chapra-poster.jpg" preload="none" playsinline></video>
+  <aside class="notes">
+    <p><b>Video de 1:55.</b> Una cajita viaja desde Estados Unidos, cruza el Canal de Panamá, llega al Perú y recorre Iquitos y San Lorenzo hasta una comunidad chapra. Presiona <b>V</b>.</p>
+    <p class="tip">La narración es en inglés y tiene subtítulos en español.</p>
+    <p>Al terminar: "Si una cajita puede llegar hasta la selva más lejana, ¿a qué niños de <b>nuestra sierra</b> estamos llamados a alcanzar?"</p>
+  </aside>
+</section>
+
+<section class="sl mt lg" data-b="ninos" data-sug="1.5" data-title="Nuestra zona y la sede de hoy">
+  <h2 class="h">Nuestra <b>zona</b></h2>
+  <div class="zona">
+    <div class="base"><small>Proyección de hoy</small><b data-cfg="sede"></b><p>Con las iglesias de <strong data-cfg="invitadas_txt"></strong>.</p><p class="team-line">Equipo Huaraz · 17 provincias de la sierra de Áncash</p></div>
+    <div class="provs"><span data-prov="Huaraz" style="animation-delay:0.15s">Huaraz</span><span data-prov="Aija" style="animation-delay:0.21s">Aija</span><span data-prov="Antonio Raimondi" style="animation-delay:0.27s">Antonio Raimondi</span><span data-prov="Asunción" style="animation-delay:0.33s">Asunción</span><span data-prov="Bolognesi" style="animation-delay:0.39s">Bolognesi</span><span data-prov="Carhuaz" style="animation-delay:0.45s">Carhuaz</span><span data-prov="Carlos F. Fitzcarrald" style="animation-delay:0.51s">Carlos F. Fitzcarrald</span><span data-prov="Corongo" style="animation-delay:0.57s">Corongo</span><span data-prov="Huari" style="animation-delay:0.63s">Huari</span><span data-prov="Huaylas" style="animation-delay:0.69s">Huaylas</span><span data-prov="Mariscal Luzuriaga" style="animation-delay:0.75s">Mariscal Luzuriaga</span><span data-prov="Ocros" style="animation-delay:0.81s">Ocros</span><span data-prov="Pallasca" style="animation-delay:0.87s">Pallasca</span><span data-prov="Pomabamba" style="animation-delay:0.93s">Pomabamba</span><span data-prov="Recuay" style="animation-delay:0.99s">Recuay</span><span data-prov="Sihuas" style="animation-delay:1.05s">Sihuas</span><span data-prov="Yungay" style="animation-delay:1.11s">Yungay</span></div>
+  </div>
+  <aside class="notes">
+    <p>Hoy estamos en <b data-cfg="sede"></b> con las iglesias de <b data-cfg="invitadas_txt"></b> (resaltadas en pantalla). Pida que levanten la mano los de cada provincia cuando la nombre.</p>
+    <p>Recuerde que el <b>equipo de Huaraz</b> atiende las 17 provincias de la sierra de Áncash (sin la costa: Santa, Casma y Huarmey). Habrá proyecciones en otras sedes.</p>
+    <p>Mencione las zonas donde hay más necesidad en estas provincias: comunidades altoandinas, caseríos lejanos y lugares de habla quechua.</p>
+    <p class="tip">La sede y las provincias invitadas se cambian en <b>Datos</b> para cada proyección.</p>
+  </aside>
+</section>
+
+<section class="sl mt lg" data-b="ninos" data-sug="2" data-title="Nuestra visión para esta temporada">
+  <h2 class="h">Nuestra <b>visión <span data-cfg="anio"></span></b></h2>
+  <p class="goal f">En <em data-cfg="zona"></em>, <em data-cfg="v_ninos"></em> necesitan escuchar el Evangelio.</p>
+  <div class="kpis f">
+    <div><div class="n"><span class="count" data-cfg-num="v_iglesias">0</span></div><div class="l">Iglesias</div></div>
+    <div><div class="n"><span class="count" data-cfg-num="v_cajitas">0</span></div><div class="l">Cajitas de regalo</div></div>
+    <div><div class="n"><span class="count" data-cfg-num="v_discipular">0</span></div><div class="l">Niños en LGA</div></div>
+  </div>
+  <p class="goal f">Grupo no alcanzado: <em data-cfg="v_gna"></em></p>
+  <aside class="notes">
+    <p>Comparta la visión y las metas de su equipo para esta temporada: cuántas iglesias movilizarán, cuántas oportunidades evangelísticas (cajitas) administrarán y cuántos niños esperan discipular con LGA. Los datos se editan en <b>Datos</b>.</p>
+    <p><b>Invitación opcional al Reclutamiento de CM de GNA:</b> "Si Dios lo está llamando a usar el ministerio de OCC para llevar el Evangelio a un grupo no alcanzado, nos gustaría invitarlo a una breve reunión al terminar".</p>
+  </aside>
+</section>
+
+<section class="sl mt lg testi" data-b="ninos" data-sug="4" data-title="Testimonio">
+  <h2 class="h">Testimonio</h2>
+  <img class="ph" src="img/testimonio-1.jpg" alt="" style="left:40px;top:330px;width:700px;height:520px;transform:rotate(-3deg)">
+  <img class="ph" src="img/testimonio-3.jpg" alt="" style="left:650px;top:300px;width:330px;height:560px;transform:rotate(2deg)">
+  <img class="ph" src="img/testimonio-2.jpg" alt="" style="left:930px;top:330px;width:380px;height:520px;transform:rotate(-2deg)">
+  <img class="ph" src="img/testimonio-4.jpg" alt="" style="left:1250px;top:380px;width:320px;height:470px;transform:rotate(3deg)">
+  <aside class="notes">
+    <p>Invite a un Compañero de Ministerio o voluntario de temporadas anteriores a compartir:</p>
+    <ul>
+      <li>Su experiencia <b>desde la Presentación de la Visión hasta la graduación</b> de La Gran Aventura.</li>
+      <li>Cómo identificaron <b>a qué niños Dios los llamó a alcanzar</b> y cómo Dios proveyó.</li>
+    </ul>
+    <p class="tip">Coordine antes quién compartirá y cuánto tiempo (unos 3 minutos).</p>
+  </aside>
+</section>
+
+<section class="sl video" data-b="multi" data-sug="2.7" data-title="Video: primer libro en idioma chapra">
+  <video class="vid" data-subs="libro" data-cover src="video/libro-chapra.mp4" poster="img/libro-chapra-poster.jpg" preload="none" playsinline></video>
+  <aside class="notes">
+    <p><b>Video de 2:37.</b> En la Amazonía peruana, los niños chapra reciben por primera vez un libro en su propio idioma. Presiona <b>V</b>.</p>
+    <p>Es un ejemplo real de cómo se llega a un <b>grupo no alcanzado</b> en el Perú: "Lo importante es que puedan entender".</p>
+    <p class="tip">Tiene subtítulos en español: una franja negra tapa los subtítulos originales en inglés.</p>
+  </aside>
+</section>
+
+<section class="sl lg verse short" data-b="multi" data-sug="1" data-title="Romanos 10:13-15">
+  <h3>ROMANOS 10:13-15</h3>
+  <p style="font-size:33px;max-width:1100px;text-align:justify">Porque «todo el que invoque el nombre del Señor será salvo». <sup>14</sup> Ahora bien, ¿cómo invocarán a aquel en quien no han creído? ¿Y cómo creerán en aquel de quien no han oído? ¿Y cómo oirán si no hay quien predique? <sup>15</sup> ¿Y cómo predicarán sin ser enviados? Así está escrito: «¡Qué hermosos son los pies de los que anuncian las buenas noticias!».</p>
+  <img class="cm" src="img/comillas.png" alt="">
+  <aside class="notes">
+    <p>Lea Romanos 10:13-15.</p>
+    <p>Conecte con el video: "¿Cómo creerán en aquel de quien no han oído?" Los chapra no podían oír el Evangelio en su idioma hasta que alguien fue enviado.</p>
+    <p>Recuerde los testimonios, la visión, las necesidades y las oportunidades que escucharon. Diga: "Veamos lo que Dios hizo la temporada pasada".</p>
+  </aside>
+</section>
+
+<section class="sl mt stats" data-b="multi" data-sug="1" data-title="Celebramos (1): cajitas, eventos, LGA">
+  <div class="lg2"><img src="img/logo-jesus.png" alt=""><img src="img/logo-occ.png" alt=""></div>
+  <div class="ctry" data-cfg="region"></div>
+  <div class="yr" data-cfg="anio_stats" data-hide-empty></div>
+  <div class="rows">
+    <div class="r f"><img src="img/icono-cajita.png" alt=""><div class="n"><span class="count" data-cfg-num="st_cajitas">0</span></div><div class="l">Cajitas de regalo</div></div>
+    <div class="r f"><img src="img/el-mejor-regalo.png" alt=""><div class="n"><span class="count" data-cfg-num="st_eventos">0</span></div><div class="l">Eventos evangelísticos</div></div>
+    <div class="r f"><img src="img/gran-aventura.png" alt=""><div class="n"><span class="count" data-cfg-num="st_lga">0</span></div><div class="l">Niños inscritos LGA</div></div>
+  </div>
+  <aside class="notes">
+    <p>Comparta los números del reporte de la temporada para <b>celebrar y alabar a Dios</b> por lo que hizo.</p>
+    <p class="tip">Cifras nacionales de Perú presentadas en la capacitación. Si tiene el reporte de Áncash o de Huaraz, cámbielas en <b>Datos</b>.</p>
+  </aside>
+</section>
+
+<section class="sl mt stats" data-b="multi" data-sug="1" data-title="Celebramos (2): creyeron, oran, graduados">
+  <div class="lg2"><img src="img/logo-jesus.png" alt=""><img src="img/logo-occ.png" alt=""></div>
+  <div class="ctry" data-cfg="region"></div>
+  <div class="yr" data-cfg="anio_stats" data-hide-empty></div>
+  <div class="rows">
+    <div class="r f"><img src="img/icono-cruz.png" alt="" style="max-height:130px"><div class="n"><span class="count" data-cfg-num="st_creyeron">0</span></div><div class="l">Creyeron en Jesús</div></div>
+    <div class="r f"><img src="img/icono-orar.png" alt=""><div class="n"><span class="count" data-cfg-num="st_orar">0</span></div><div class="l">Compartir y orar</div></div>
+    <div class="r f"><img src="img/icono-graduado.png" alt=""><div class="n"><span class="count" data-cfg-num="st_graduados">0</span></div><div class="l">Graduados</div></div>
+  </div>
+  <aside class="notes">
+    <p>Cada número es un niño. Haga una pausa después de "creyeron en Jesús".</p>
+    <p class="tip">Si los tiene, mencione también cuántos Compañeros de Oración oran por OCC y si se trabajó con algún Grupo No Alcanzado.</p>
+  </aside>
+</section>
+
+<section class="sl mt lg" data-b="multi" data-sug="1.8" data-title="¡Imagínese!">
+  <h2 class="h">¡<b>Imagínese</b>!</h2>
+  <p class="sub">…si el ministerio de niños fuese una prioridad</p>
+  <div class="imag">
+    <div class="rings"><div class="ring" data-at="3">Comunidad</div><div class="ring" data-at="2">Familia</div><div class="ring" data-at="1">Un niño</div></div>
+    <ol>
+      <li class="f"><b>1.</b> ¿Impacto en un niño?</li>
+      <li class="f"><b>2.</b> ¿Impacto en una familia?</li>
+      <li class="f"><b>3.</b> ¿Impacto en una comunidad?</li>
+    </ol>
+  </div>
+  <aside class="notes">
+    <p>Haga cada pregunta y deje que algunos respondan antes de avanzar. Los círculos crecen con cada clic.</p>
+    <p><b>Importante:</b> creemos que el evangelismo, el discipulado y la multiplicación con los niños es la oportunidad más urgente e importante del mundo. <b>¿Se unirá a esta causa?</b></p>
+  </aside>
+</section>
+
+<section class="sl mt lg" data-b="multi" data-sug="2.5" data-title="Momento de oración">
+  <div class="calm">
+    <h2 class="h">Un momento de <b>oración</b></h2>
+    <p>¿Me está llamando Dios a participar con OCC?</p>
+    <p>¿A qué niños quiere que alcance?</p>
+    <p class="f" style="margin-top:30px;font-weight:700;color:var(--g)">Oremos en silencio</p>
+  </div>
+  <aside class="notes">
+    <p>Pídales que consideren si Dios los está llamando a participar con OCC y a qué niños quieren alcanzar. Con un clic aparece "Oremos en silencio": dé unos 3 minutos de <b>oración en silencio</b>.</p>
+    <p>Pídale a un <b>pastor reconocido o Compañero de Ministerio</b> que ore y cierre este tiempo.</p>
+  </aside>
+</section>
+
+<section class="sl mt big lg phslide" data-b="equipo" data-sug="0.5" data-title="Próximos pasos">
+  <div class="phone"><img src="img/proximos-pasos.jpg" alt="" style="object-position:28% 50%"></div>
+  <div class="side">
+    <h2 class="h" style="margin-bottom:24px"><b>Próximos pasos</b></h2>
+    <ul class="list"><li>Construyendo un equipo</li><li>Proceso de selección</li></ul>
+  </div>
+  <aside class="notes">
+    <p>Asegúrese de que <b>cada participante tenga un Folleto para Compañeros de Ministerio y una Solicitud</b>.</p>
+    <p>Objetivos: que sepan cuál es el siguiente paso, entiendan el proceso de solicitud, evaluación y selección, y sepan cómo construir un Equipo Ministerial efectivo.</p>
+  </aside>
+</section>
+
+<section class="sl mt lg" data-b="equipo" data-sug="3" data-title="Siguientes pasos (4)">
+  <h2 class="h">Siguientes <b>pasos</b></h2>
+  <div class="steps4">
+    <div class="f"><div class="k">1</div><h4>Ore</h4><p>¿Le guía Dios a ser parte de OCC? ¿A qué niños?</p></div>
+    <div class="f"><div class="k">2</div><h4>Aplique</h4><p>Complete y entregue la solicitud al equipo de OCC.</p></div>
+    <div class="f"><div class="k">3</div><h4>Elija un líder</h4><p>Designe a un Líder del Equipo Ministerial de confianza.</p></div>
+    <div class="f"><div class="k">4</div><h4>Capacítese</h4><p>Si es seleccionado, el Líder y los Maestros de LGA asisten a la capacitación.</p></div>
+  </div>
+  <aside class="notes">
+    <p>Pida que sigan el <b>Folleto para Compañeros de Ministerio</b>. Repase brevemente la misión y los pasos del ministerio.</p>
+    <p>El rol de Líder del Equipo Ministerial requiere compromiso de tiempo y enfoque.</p>
+  </aside>
+</section>
+
+<section class="sl mt lg" data-b="equipo" data-sug="6.5" data-title="Construyendo un equipo">
+  <h2 class="h">Construyendo un <b>equipo</b></h2>
+  <div class="team">
+    <div class="f"><h4>Líder del Equipo</h4><ul><li>Coordina el programa de OCC</li><li>Guía al Equipo Ministerial</li><li>Cuida la presentación del Evangelio</li><li>Asegura la protección de los niños</li></ul><span class="att">Asiste a la capacitación</span></div>
+    <div class="f"><h4>Maestros de LGA</h4><ul><li>Apoyan el Evento Evangelístico</li><li>Discipulan con La Gran Aventura</li></ul><span class="att">Asisten a la capacitación</span></div>
+    <div class="f"><h4>Otros roles</h4><ul><li>Se explican en la capacitación</li><li>Se reclutan después</li></ul></div>
+  </div>
+  <aside class="notes">
+    <p>Se necesita un equipo comprometido para implementar el ministerio, proteger a los niños, compartir el Evangelio y discipular.</p>
+    <p><b>Líder del Equipo Ministerial:</b> lo asigna el pastor o el líder del ministerio infantil. Debe ser alguien organizado y con tiempo suficiente para dirigir la planificación y la implementación.</p>
+    <p>La presentación del Evangelio es lo más importante del evento: la hace el <b>Líder o un Maestro de LGA que asistió a la capacitación</b>.</p>
+    <p><b>Punto clave:</b> elegir bien al Líder y reclutar Maestros de LGA y voluntarios lleva a un ministerio efectivo.</p>
+  </aside>
+</section>
+
+<section class="sl mt big lg" data-b="seleccion" data-sug="1" data-title="3 proyectos (temporada 2026-2027)">
+  <h2 class="h"><b>3 proyectos</b></h2>
+  <p class="sub" style="margin-top:-24px">Temporada 2026-2027</p>
+  <table class="pj">
+    <thead><tr><th></th><th>Cajas</th><th>Maestros</th><th>Materiales<br>de LGA</th></tr></thead>
+    <tbody>
+      <tr><td>• Pequeño</td><td>50</td><td>2</td><td>50</td></tr>
+      <tr><td>• Mediano</td><td>100</td><td>3</td><td>80</td></tr>
+      <tr><td>• Grande</td><td>150</td><td>5</td><td>130</td></tr>
+    </tbody>
+  </table>
+  <aside class="notes">
+    <p>Cuadro oficial de la solicitud 2026-2027 (sección 2). Cada iglesia elige <b>un</b> proyecto según cuántos maestros de niños tiene.</p>
+    <p><b>Cambió el proyecto Grande:</b> ahora pide <b>5 maestros</b> y recibe <b>130 materiales de LGA</b> (antes 4 y 105).</p>
+    <p>Iglesias con varios lugares (iglesias hijas, misiones) presentan <b>una solicitud por cada lugar</b>, cada uno con su propio Líder del Equipo.</p>
+  </aside>
+</section>
+
+<section class="sl mt big lg phslide" data-b="seleccion" data-sug="1.5" data-title="Formulario de aplicación">
+  <div class="phone form-ph"><img src="img/solicitud-2026.jpg" alt="Solicitud para Compañeros de Ministerio 2026-2027"></div>
+  <div class="side" style="top:120px">
+    <h2 class="h" style="font-size:64px">Formulario de<br><b>aplicación</b></h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:34px">
+      <div class="f"><h4>La solicitud pide</h4><ul class="checks"><li>Datos de la iglesia</li><li>Proyecto y maestros</li><li>Uso de las cajitas</li><li>Comunidad no alcanzada</li><li>2 referencias</li><li>Equipo de maestros</li></ul></div>
+      <div class="f"><h4>Adjuntar también</h4><ul class="checks"><li>Croquis de ubicación de la iglesia</li><li>DNI del pastor y del Líder de Equipo</li><li>Foto del frontis del templo</li></ul></div>
+    </div>
+  </div>
+  <aside class="notes">
+    <p><b>Muestre la Solicitud.</b> Todos los CM potenciales, incluidos los que ya participaron, deben llenarla.</p>
+    <p><b>Secciones de la solicitud 2026-2027:</b></p>
+    <ol>
+      <li>Información general de la iglesia u organización.</li>
+      <li>Información del ministerio: iglesia o anexo, afiliación, cuántos maestros de niños tiene y qué proyecto pide.</li>
+      <li>Uso de las cajitas: en la iglesia, en un evento EBDV u otro.</li>
+      <li>Motivación: ¿por qué desea participar en ONN?</li>
+      <li>Comunidad no alcanzada: etnia, ubicación y necesidades (si Dios los llama a un GNA).</li>
+      <li>Dos referencias que conozcan bien a la iglesia.</li>
+      <li>Equipo de maestros y voluntarios: nombre, edad, DNI, función y celular.</li>
+      <li>Declaración y firmas del pastor o líder y del Líder del Equipo Ministerial.</li>
+      <li>A quién entregar la carpeta.</li>
+    </ol>
+    <p>Recalque los <b>3 adjuntos</b>: sin ellos la carpeta está incompleta.</p>
+    <p>El equipo de OCC (ENL, ERLE, ERL) revisa cada solicitud en oración. <b>Todos serán informados</b> si fueron seleccionados.</p>
+  </aside>
+</section>
+
+<section class="sl mt lg" data-b="seleccion" data-sug="1" data-title="La carpeta 2026-2027">
+  <h2 class="h">Su <b>carpeta</b></h2>
+  <p class="sub">Temporada 2026-2027 · Todo se trata de Jesús</p>
+  <div class="steps4">
+    <div class="f"><div class="k">1</div><h4>Solicitud</h4><p>Firmada por el pastor y el Líder del Equipo.</p></div>
+    <div class="f"><div class="k">2</div><h4>Intercesores</h4><p>Niños y adultos que orarán por el ministerio.</p></div>
+    <div class="f"><div class="k">3</div><h4>Valores y protección</h4><p>Valores fundamentales y protección de la niñez.</p></div>
+    <div class="f"><div class="k">4</div><h4>Declaración de fe</h4><p>De Samaritan's Purse.</p></div>
+  </div>
+  <aside class="notes">
+    <p>Muestre la carpeta física y recorra sus 4 documentos.</p>
+    <ul>
+      <li><b>Ficha de intercesores:</b> iglesia, pastor y coordinador de oración, con la lista de niños intercesores (nombre y edad) y de adultos intercesores (nombre, teléfono y correo). Aquí se movilizan los Compañeros de Oración.</li>
+      <li><b>Valores fundamentales:</b> oración, Evangelio sin manipulación, discipulado con LGA, movilizar a los niños, buena mayordomía, seguridad de los niños, valorar a la iglesia local, urgencia, reportar y gratuidad total.</li>
+      <li><b>Protección de la niñez:</b> se prohíbe todo abuso. Si se sospecha o se descubre un abuso durante el evento o en LGA, el CM responde apropiadamente y lo reporta a las autoridades, al Equipo Nacional de Liderazgo de SP-OCC y al Director Regional.</li>
+      <li><b>Declaración de fe</b> de Samaritan's Purse.</li>
+    </ul>
+    <p>El equipo de OCC (ENL, ERLE, ERL) revisa cada carpeta en oración. <b>Todos serán informados</b> si fueron seleccionados.</p>
+  </aside>
+</section>
+
+<section class="sl mt lg" data-b="seleccion" data-sug="0.75" data-title="Fechas importantes">
+  <h2 class="h">Fechas <b>importantes</b></h2>
+  <div class="dates">
+    <div class="f"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h7M9 17h5" stroke-linecap="round"/></svg><div class="l">Solicitudes en</div><div class="v" data-cfg="sol_disp"></div></div>
+    <div class="f"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg><div class="l">Entregar a</div><div class="v" data-cfg="sol_entrega"></div></div>
+    <div class="f"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4" stroke-linecap="round"/></svg><div class="l">Fecha límite</div><div class="v" data-cfg="sol_fecha"></div></div>
+  </div>
+  <aside class="notes">
+    <p>Revise <b>cuándo y a quién</b> se entregan las solicitudes. Complete los datos en <b>Datos</b> antes de presentar.</p>
+    <p>Si es seleccionado, comience a formar su Equipo Ministerial: los Compañeros de Ministerio con equipos completos son más efectivos.</p>
+  </aside>
+</section>
+
+<section class="sl cover" data-b="seleccion" data-sug="0.75" data-title="Cierre: preguntas y oración">
+  <div class="lg"><img src="img/logo-jesus.png" alt=""><img src="img/logo-occ.png" alt=""></div>
+  <img class="m1" src="img/montanas-portada.png" alt="">
+  <img class="m2" src="img/montanas.png" alt="">
+  <div class="tt"><span>Presentación</span><b>DE VISIÓN</b></div>
+  <div class="who"><span data-cfg="coordinador"></span><span data-cfg="sede_tag" data-hide-empty></span></div>
+  <aside class="notes">
+    <p>Tome un momento para <b>contestar preguntas</b>.</p>
+    <p><b>Ore para terminar.</b> Anime a los líderes a orar por quienes serán parte de sus Equipos Ministeriales.</p>
+    <p>Invite a hablar con usted y su equipo a quienes quieran llenar una solicitud. Es un buen momento para un refrigerio.</p>
+    <p class="tip">Si hay interesados en GNA, continúe con las 2 diapositivas opcionales (15 min, fuera de los 70).</p>
+  </aside>
+</section>
+
+<section class="sl mt lg" data-b="gna" data-sug="7" data-title="GNA: la visión (opcional)">
+  <h2 class="h">Los <b>no alcanzados</b></h2>
+  <div class="gna">
+    <div>
+      <p class="f">Hay comunidades con poco o ningún acceso al Evangelio. Hemos identificado a <em data-cfg="v_gna"></em>.</p>
+      <p class="f">Buscamos un <em>CM de GNA</em>: un compromiso de <b>varios años</b> para hacer discípulos allí.</p>
+      <p class="f">Su equipo recibe mentoría y apoyo en oración.</p>
+    </div>
+    <blockquote class="f">"… ¡La cuerda de tres hilos no se rompe fácilmente!"<cite>Eclesiastés 4:12 NVI</cite></blockquote>
+  </div>
+  <aside class="notes">
+    <p><b>Opcional, fuera de los 70 minutos.</b> Es una conversación breve después de la Presentación, solo con quienes estén interesados en un GNA.</p>
+    <p>Todavía hay comunidades en la región con pocos o ningún creyente evangélico. Puede que los participantes conozcan otras. Los CM de GNA reciben mentoría sobre cómo usar OCC para llegar a los no alcanzados y apoyo en oración local y mundial.</p>
+  </aside>
+</section>
+
+<section class="sl mt lg" data-b="gna" data-sug="8" data-title="GNA: inversión y cómo aplicar (opcional)">
+  <h2 class="h">La <b>inversión</b></h2>
+  <div class="steps4" style="grid-template-columns:repeat(3,1fr)">
+    <div class="f"><div class="k">1</div><h4>Oración</h4><p>Más guerra espiritual: necesitamos oración por protección.</p></div>
+    <div class="f"><div class="k">2</div><h4>Tiempo</h4><p>Tres reuniones de entrenamiento adicionales.</p></div>
+    <div class="f"><div class="k">3</div><h4>Recursos</h4><p>Cajitas, materiales, entrenamiento y oración. Sin fondos adicionales.</p></div>
+  </div>
+  <p class="key f" style="margin-top:34px"><b>Cómo aplicar:</b> complete la <b>sección 5, "Comunidad no alcanzada"</b>, de su solicitud.</p>
+  <aside class="notes">
+    <p><b>Oración:</b> llevar el Evangelio a un GNA aumenta la guerra espiritual (2 Corintios 10:4). <b>Tiempo:</b> además del proceso estándar, hay 3 reuniones con el Equipo de Liderazgo. <b>Recursos:</b> OCC no proporciona fondos adicionales.</p>
+    <p>Por la inversión de mentoría, se elige <b>un nuevo CM de GNA por temporada</b>.</p>
+  </aside>
+</section>
+
+    </div>
+    <div id="black"></div>
+  </div>
+  <div id="hint">Presiona <b>F</b> para pantalla completa · arrastra esta ventana al proyector</div>
+  <div id="sala"><div class="sc"><div id="salaQr"></div><div><small>Control desde el celular</small><h3>Escanea este código</h3><ol><li>Abre la cámara del celular.</li><li>Apunta al código y toca el enlace.</li><li>Usa los botones <b>Siguiente</b> y <b>Anterior</b>.</li></ol><div class="code">Sala<b id="salaCode">······</b></div><div id="salaSt">Preparando…</div></div></div></div>
+  <div id="salaMini"></div>
+</div>
+
+<script>
+const AGENDA=[
+  {id:'intro',sec:'Introducción',t:'Bienvenida y video',min:5},
+  {id:'mision',sec:'El Corazón de OCC',t:'Misión',min:5},
+  {id:'porque',sec:'El Corazón de OCC',t:'¿Por qué alcanzar a los niños?',min:10},
+  {id:'estrategia',sec:'Estrategia Compartida',t:'Nuestra estrategia',min:15},
+  {id:'ninos',sec:'Estrategia Compartida',t:'¿A qué niños invitaremos?',min:10},
+  {id:'multi',sec:'Estrategia Compartida',t:'Impacto de la multiplicación',min:10},
+  {id:'equipo',sec:'Próximos Pasos',t:'Construyendo un equipo',min:10},
+  {id:'seleccion',sec:'Próximos Pasos',t:'Proceso de selección',min:5},
+  {id:'gna',sec:'Opcional',t:'Reclutamiento de CM de GNA',min:15,opt:true}
+];
+const CFG_KEY='occ-vp-cfg-huaraz';
+const DEFAULTS={
+  coordinador:'Equipo Huaraz · Áncash',sede:'Caraz',invitadas:'Huaylas, Yungay, Carhuaz',region:'Perú',zona:'la sierra de Áncash',anio:'2026-2027',anio_stats:'',
+  st_cajitas:'414960',st_eventos:'3319',st_lga:'290472',st_creyeron:'156197',st_orar:'75881',st_graduados:'121225',
+  v_ninos:'',v_iglesias:'',v_cajitas:'',v_discipular:'',v_gna:'',
+  sol_disp:'',sol_entrega:'',sol_fecha:''
+};
+const FIELDS=[
+  ['Proyección de hoy'],['sede','Sede (ciudad)'],['invitadas','Provincias invitadas',1,'provs'],
+  ['General'],['coordinador','Texto bajo el título (portada)',1],['region','País (celebración)'],['zona','Zona del equipo (visión)'],['anio','Temporada actual'],
+  ['Celebración (temporada pasada)'],['anio_stats','Año de las cifras (vacío = no se muestra)'],['st_cajitas','Cajitas de regalo'],['st_eventos','Eventos evangelísticos'],['st_lga','Niños inscritos en LGA'],['st_creyeron','Creyeron en Jesús'],['st_orar','Compartir y orar'],['st_graduados','Graduados'],
+  ['Visión de esta temporada'],['v_ninos','Niños en mayor necesidad (ej. «los niños de las comunidades altoandinas»)',1],['v_iglesias','Iglesias a movilizar'],['v_cajitas','Cajitas de regalo'],['v_discipular','Niños a discipular en LGA'],['v_gna','Grupo no alcanzado (GNA)'],
+  ['Solicitudes'],['sol_disp','Disponibles en',1],['sol_entrega','Se entregan a',1],['sol_fecha','Fecha límite',1]
+];
+const SUBS={"viaje":[[0.0,5.0,"¿Qué se necesita para llevar esta cajita de regalo"],[5.0,9.96,"hasta las aldeas más remotas de la Amazonía peruana?"],[9.96,13.0,"Veámoslo paso a paso."],[13.0,17.34,"Hay varios países que recolectan cajitas de regalo,"],[17.34,24.24,"pero esta viene de un punto de recolección en Estados Unidos, por la cercanía."],[24.24,29.28,"Desde allí viaja a Charlotte, Carolina del Norte, donde se clasifica y se prepara para su viaje internacional."],[29.28,32.4,"También se agrega al envío una caja de materiales ministeriales."],[32.4,39.43,"Luego la caja sube a un camión rumbo al puerto de Charleston, Carolina del Sur,"],[39.43,42.08,"donde comienza su viaje por el océano."],[42.08,47.6,"El barco de carga rodea Florida y cruza el Canal de Panamá"],[47.6,50.6,"y baja por la costa oeste de Sudamérica hacia Lima, Perú."],[50.6,54.96,"Al llegar a Lima, sube a otro camión"],[54.96,61.04,"y empieza un viaje de 20 días cruzando los Andes hasta el río Ucayali, en Pucallpa."],[61.04,67.76,"En el Ucayali toma otro barco de carga: cinco días río abajo"],[67.76,72.53,"hasta Iquitos, conocida como la puerta de la Amazonía."],[72.53,76.8,"Después, un último tramo en camión hasta el río Marañón."],[76.8,82.16,"Tras 12 horas en bote por el Marañón, nuestra cajita llega a San Lorenzo,"],[82.16,86.97,"pero el viaje aún no termina. El último tramo exige tres trayectos de dos días río arriba"],[86.97,92.95,"en una canoa con motor llamada peque peque, desde San Lorenzo hasta aldeas en lo profundo de la selva,"],[92.95,97.6,"donde un Compañero de Ministerio capacitado entrega la cajita a un niño"],[97.6,100.8,"que espera con ansias recibirla y conocer más de Jesús."],[101.76,106.83,"¡Qué viaje! Gracias por acompañarnos"],[106.83,112.0,"y por compartir el amor de Dios, una cajita a la vez."]],"libro":[[0.5,7.5,"En lo profundo de la Amazonía peruana"],[7.6,13.0,"viven los chapra"],[29.0,39.0,"Todos nos hemos reunido para escuchar la Palabra de Dios."],[40.5,44.0,"Operation Christmas Child llegó a la selva del Perú."],[44.2,50.4,"Ha sido una oportunidad de trabajar junto a nuestro equipo de liderazgo regional, con sede en Iquitos."],[51.0,59.2,"Trabajamos con traductores chapra para traducir El Mejor Regalo al idioma chapra."],[60.0,64.2,"Es el primer libro impreso que tienen, y ellos ayudaron a hacerlo."],[64.5,67.1,"No tienen ningún otro material en su propio idioma."],[67.4,75.0,"Lo usarán en la escuela para enseñar las historias de Jesús del Evangelio de Juan en chapra."],[76.5,80.7,"Nunca habíamos visto algo así."],[81.0,84.8,"Creo que Dios está cerca de nosotros."],[85.0,91.2,"Este libro va a ayudar a los niños de nuestra comunidad."],[91.5,99.0,"Lo importante es que puedan entender en su idioma para que puedan conocer a Dios."],[100.3,103.9,"Es un libro que está marcando la historia de un pueblo"],[104.0,107.4,"que siempre ha sido rechazado"],[107.5,111.3,"y relegado por otro idioma y otro pueblo."],[111.5,113.4,"Pero es un pueblo que Dios ama."],[113.5,117.2,"Se siente el poder de Jesús que une."],[117.4,122.6,"Los reunió alrededor de un regalo sencillo, pero ahora se dan cuenta de que hay mucho más."],[123.0,129.4,"Inca Roca, Capirona, Guayusa, Pijuayal."],[129.8,132.4,"Todos han escuchado la Palabra de Dios,"],[132.5,135.3,"que Jesús vino a este mundo"],[135.4,140.5,"y que Jesús vino a morir por nosotros."],[141.3,146.9,"Tener el libro El Mejor Regalo traducido a su propio idioma es algo increíble."],[147.0,151.8,"Es algo que va a trascender por generaciones."]]};
+const MTN='<div class="mtn"><img src="img/montanas.png" alt=""></div>';
+const LOGOS='<div class="logos"><img src="img/logo-jesus.png" alt=""><img src="img/logo-occ.png" alt=""></div>';
+
+const $=s=>document.querySelector(s);
+const deck=$('#deck');
+const SL=[...deck.children];
+const ls={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+
+SL.forEach(s=>{
+  const sv=s.querySelector('video[data-subs]');
+  if(sv)sv.insertAdjacentHTML('afterend',`<div class="subs${sv.hasAttribute('data-cover')?' cover':''}"><span></span></div>`);
+  if(s.classList.contains('lg'))s.insertAdjacentHTML('afterbegin',LOGOS);
+  if(s.classList.contains('mt'))s.insertAdjacentHTML('afterbegin',MTN);
+});
+
+let S={i:0,step:0,black:false,cd:null,vid:{play:false,r:0},poll:[0,0,0],cfg:Object.assign({},DEFAULTS,ls.get(CFG_KEY)||{})};
+const nF=s=>s.querySelectorAll('.f').length;
+const fmtN=v=>Number(v).toLocaleString('en-US');
+const mmss=ms=>{const t=Math.max(0,Math.round(ms/1000)),m=Math.floor(t/60),s=t%60;return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`};
+const mss=ms=>{const t=Math.max(0,Math.ceil(ms/1000));return `${Math.floor(t/60)}:${String(t%60).padStart(2,'0')}`};
+
+function fit(frame,stage){
+  const r=frame.getBoundingClientRect();
+  stage.style.transform=`translate(-50%,-50%) scale(${Math.min(r.width/1600,r.height/900)})`;
+}
+const PROVS=['Huaraz','Aija','Antonio Raimondi','Asunción','Bolognesi','Carhuaz','Carlos F. Fitzcarrald','Corongo','Huari','Huaylas','Mariscal Luzuriaga','Ocros','Pallasca','Pomabamba','Recuay','Sihuas','Yungay'];
+const listTxt=a=>a.length<2?a.join(''):a.slice(0,-1).join(', ')+' y '+a[a.length-1];
+function applyCfg(root,base){
+  const inv=String(base.invitadas||'').split(',').map(x=>x.trim()).filter(Boolean);
+  const cfg=Object.assign({},base,{invitadas_txt:listTxt(inv),sede_tag:base.sede?'\u00a0·\u00a0'+base.sede:''});
+  root.querySelectorAll('.provs').forEach(p=>{
+    p.classList.toggle('sel',inv.length>0);
+    p.querySelectorAll('[data-prov]').forEach(c=>c.classList.toggle('hq',inv.includes(c.dataset.prov)));
+  });
+  root.querySelectorAll('[data-cfg]').forEach(el=>{
+    const v=(cfg[el.dataset.cfg]||'').trim();
+    el.textContent=v||'______';el.classList.toggle('blank',!v);
+  });
+  root.querySelectorAll('[data-cfg-num]').forEach(el=>{
+    const v=String(cfg[el.dataset.cfgNum]||'').replace(/[^\d]/g,'');
+    el.dataset.to=v;delete el.dataset.done;
+    el.textContent=v?'0':'____';el.classList.toggle('blank',!v);
+  });
+}
+function applySteps(sec,step){
+  sec.querySelectorAll('.f').forEach((f,k)=>{f.classList.toggle('on',k<step);f.classList.toggle('cur',k===step-1)});
+  sec.querySelectorAll('[data-at]').forEach(el=>{const a=+el.dataset.at;el.classList.toggle('on',step>=a);el.classList.toggle('cur',step===a)});
+}
+function applyPoll(sec,poll){
+  const mx=Math.max(1,...poll);
+  sec.querySelectorAll('.bar[data-k]').forEach(b=>b.style.width=(poll[b.dataset.k]/mx*100)+'%');
+  sec.querySelectorAll('[data-v]').forEach(v=>v.textContent=poll[v.dataset.v]);
+}
+function runCounters(sec){
+  sec.querySelectorAll('.count').forEach(c=>{
+    const fr=c.closest('.f'),vis=!fr||fr.classList.contains('on');
+    if(!c.dataset.to)return;
+    if(!vis){c.textContent='0';delete c.dataset.done;return}
+    if(c.dataset.done)return;
+    c.dataset.done=1;
+    const to=+c.dataset.to,t0=performance.now(),dur=1500;
+    const step=now=>{
+      if(!c.dataset.done)return;
+      const p=Math.min(1,(now-t0)/dur);
+      c.textContent=fmtN(Math.round(to*(1-Math.pow(1-p,3))));
+      if(p<1)requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  });
+}
+function resetCounters(sec){sec.querySelectorAll('.count').forEach(c=>{delete c.dataset.done;if(c.dataset.to)c.textContent='0'})}
+function cdLeft(cd){return !cd?0:cd.end?Math.max(0,cd.end-Date.now()):cd.left}
+function applyCd(sec,cd){
+  const el=sec.querySelector('.cd');if(!el||!cd)return;
+  const left=cdLeft(cd);
+  el.querySelector('b').textContent=mss(left);
+  el.querySelector('.fg').style.strokeDashoffset=540.35*(1-left/(cd.dur*1000));
+  el.classList.toggle('done',left<=0);
+}
+function freshCd(i){const d=+SL[i].dataset.cd;return d?{dur:d,left:d*1000,end:null}:null}
+function onSlideChange(){S.cd=freshCd(S.i);S.vid={play:false,r:S.vid.r+1}}
+function move(dir){
+  const n=nF(SL[S.i]),pi=S.i;
+  if(dir>0){if(S.step<n)S.step++;else if(S.i<SL.length-1){S.i++;S.step=0}}
+  else{if(S.step>0)S.step--;else if(S.i>0){S.i--;S.step=nF(SL[S.i])}}
+  if(S.i!==pi)onSlideChange();
+}
+function jump(i){S.i=Math.max(0,Math.min(SL.length-1,i));S.step=0;onSlideChange()}
+function toggleCd(){
+  if(!S.cd)return;
+  if(S.cd.end){S.cd.left=cdLeft(S.cd);S.cd.end=null}
+  else{if(S.cd.left<=0)S.cd.left=S.cd.dur*1000;S.cd.end=Date.now()+S.cd.left}
+}
+function keyAction(e){
+  if(e.target&&e.target.closest&&e.target.closest('input,select,dialog'))return null;
+  const k=e.key;
+  if(['ArrowRight','ArrowDown','PageDown',' ','Enter'].includes(k))return 'next';
+  if(['ArrowLeft','ArrowUp','PageUp','Backspace'].includes(k))return 'prev';
+  if(k==='Home')return 'first';if(k==='End')return 'last';
+  if(k==='b'||k==='B'||k==='.')return 'black';
+  if(k==='t'||k==='T')return 'cd';
+  if(k==='v'||k==='V')return 'vid';
+  return null;
+}
+function doAction(a){
+  if(a==='next')move(1);else if(a==='prev')move(-1);
+  else if(a==='first')jump(0);else if(a==='last')jump(SL.length-1);
+  else if(a==='black')S.black=!S.black;else if(a==='cd')toggleCd();
+  else if(a==='vid'&&SL[S.i].querySelector('video'))S.vid={play:!S.vid.play,r:S.vid.r};
+  else if(a==='vidr')S.vid={play:true,r:S.vid.r+1};
+}
+
+const PEER_JS='https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js';
+const QR_JS='https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js';
+const ROOM=c=>'qodit-occvp-'+c;
+const isWeb=/^https?:$/.test(location.protocol);
+function loadJs(src){return new Promise((ok,ko)=>{const t=document.createElement('script');t.src=src;t.onload=ok;t.onerror=ko;document.head.appendChild(t)})}
+
+const mode=location.hash.slice(1);
+if(mode==='proyector')bootAudience();
+else if(mode==='sala')bootAudience(true);
+else if(mode.startsWith('control='))bootPresenter(null,mode.slice(8));
+else if(mode==='presentador')bootPresenter();
+else bootHome();
+
+function bootHome(){
+  document.body.className='home';
+  if(!isWeb){$('#bSala').disabled=true;$('#bSala').style.opacity=.45;$('#webOnly').style.display='block'}
+  $('#bSala').onclick=()=>{
+    if(!isWeb)return;
+    try{document.documentElement.requestFullscreen()}catch(e){}
+    history.replaceState(null,'','#sala');bootAudience(true);
+  };
+  $('#bPres').onclick=()=>{
+    const w=openProjector();
+    if(!w){$('#popWarn').style.display='block';return}
+    history.replaceState(null,'','#presentador');bootPresenter(w);
+  };
+  $('#bAud').onclick=()=>{history.replaceState(null,'','#proyector');bootAudience()};
+  $('#bCfg').onclick=()=>openCfg();
+}
+function openProjector(){return window.open(location.href.split('#')[0]+'#proyector','occ-proyector','popup,width=1280,height=760')}
+
+function bootAudience(room){
+  document.body.className='aud';
+  deck.querySelectorAll('aside.notes').forEach(n=>n.remove());
+  deck.querySelectorAll('video').forEach(v=>v.preload='metadata');
+  let rconn=null,everLinked=false,code='';
+  const frame=$('#view'),stage=$('#stage');
+  const refit=()=>fit(frame,stage);refit();addEventListener('resize',refit);
+  let linked=false,last=0,shown=-1,cfgSig='',vr=-1,blocked=false,lastPlay=false;
+  const hint=$('#hint');
+  const hideHint=()=>hint.classList.add('off');
+  setTimeout(hideHint,12000);
+  document.addEventListener('fullscreenchange',()=>{if(document.fullscreenElement)hideHint()});
+  const fs=()=>{if(document.fullscreenElement)document.exitFullscreen();else document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen()};
+  frame.addEventListener('dblclick',fs);
+  let mt;addEventListener('mousemove',()=>{document.body.classList.add('cursor');clearTimeout(mt);mt=setTimeout(()=>document.body.classList.remove('cursor'),1500)});
+  const send=m=>{
+    const msg=Object.assign({occ:1},m);
+    try{window.opener&&window.opener.postMessage(msg,'*')}catch(e){}
+    try{if(rconn&&rconn.open)rconn.send(msg)}catch(e){}
+  };
+  function salaUi(){
+    if(!room)return;
+    if(linked)everLinked=true;
+    $('#sala').classList.toggle('on',!linked&&!everLinked);
+    const mini=$('#salaMini');mini.classList.toggle('on',!linked&&everLinked);
+    mini.textContent=`Celular desconectado · sala ${code}`;
+  }
+  async function hostRoom(){
+    $('#sala').classList.add('on');
+    try{await loadJs(PEER_JS);await loadJs(QR_JS)}catch(e){$('#salaSt').textContent='Sin internet: no se pudo preparar el control desde el celular.';return}
+    let tries=0;
+    const start=()=>{
+      code=ls.get('occ-sala')||String(Math.floor(100000+Math.random()*900000));ls.set('occ-sala',code);
+      const url=location.href.split('#')[0]+'#control='+code;
+      const qr=qrcode(0,'M');qr.addData(url);qr.make();
+      $('#salaQr').innerHTML=qr.createSvgTag(8,2);$('#salaCode').textContent=code;
+      const peer=new Peer(ROOM(code));
+      peer.on('open',()=>{$('#salaSt').textContent='Listo. Esperando el celular…'});
+      peer.on('connection',c=>{
+        c.on('open',()=>{rconn=c;send({t:'hello'})});
+        c.on('data',onMsg);
+        c.on('close',()=>{if(rconn===c)rconn=null});
+      });
+      peer.on('disconnected',()=>{try{peer.reconnect()}catch(e){}});
+      peer.on('error',e=>{
+        if(e.type==='unavailable-id'){peer.destroy();if(++tries>3)ls.set('occ-sala',null);setTimeout(start,2500)}
+        else $('#salaSt').textContent='Reintentando conexión…';
+      });
+    };
+    start();
+  }
+  function video(sec){
+    const v=sec.querySelector('video');if(!v)return;
+    if(S.vid.r!==vr){vr=S.vid.r;v.pause();v.currentTime=0}
+    if(S.vid.play&&!lastPlay&&v.ended)v.currentTime=0;
+    lastPlay=S.vid.play;
+    if(S.vid.play&&v.paused&&!v.ended)v.play().then(()=>{blocked=false}).catch(()=>{blocked=true});
+    if(!S.vid.play&&!v.paused)v.pause();
+  }
+  function render(){
+    const sig=JSON.stringify(S.cfg);
+    if(sig!==cfgSig){cfgSig=sig;applyCfg(deck,S.cfg)}
+    if(S.i!==shown){
+      if(shown>=0){SL[shown].classList.remove('active');resetCounters(SL[shown]);const pv=SL[shown].querySelector('video');if(pv){pv.pause();pv.currentTime=0}}
+      SL[S.i].classList.add('active');shown=S.i;
+    }
+    const sec=SL[S.i];
+    for(let j=S.i;j<=S.i+2&&j<SL.length;j++){const nv=SL[j].querySelector('video');if(nv&&nv.preload!=='auto')nv.preload='auto'}
+    applySteps(sec,S.step);applyPoll(sec,S.poll);runCounters(sec);applyCd(sec,S.cd);video(sec);
+    $('#black').classList.toggle('on',!!S.black);
+  }
+  function onMsg(d){
+    if(!d||!d.occ||d.t!=='state')return;
+    linked=true;last=Date.now();S=d.s;render();salaUi();
+  }
+  addEventListener('message',e=>onMsg(e.data));
+  send({t:'hello'});
+  setInterval(()=>{if(!linked||Date.now()-last>3000){linked=false;send({t:'hello'})}salaUi()},1500);
+  if(room)hostRoom();
+  let subTxt=null;
+  (function subsTick(){
+    const v=SL[S.i].querySelector('video[data-subs]');
+    if(v){
+      const t=v.currentTime,c=(SUBS[v.dataset.subs]||[]).find(q=>t>=q[0]&&t<q[1]);
+      const txt=c&&t>0?c[2]:'';
+      if(txt!==subTxt){subTxt=txt;const box=v.nextElementSibling;box.querySelector('span').textContent=txt;box.classList.toggle('on',!!txt)}
+    }
+    requestAnimationFrame(subsTick);
+  })();
+  setInterval(()=>{
+    applyCd(SL[S.i],S.cd);
+    const v=SL[S.i].querySelector('video');
+    if(v&&v.ended&&S.vid.play){S.vid.play=false}
+    if(linked&&v)send({t:'vid',cur:v.currentTime,dur:v.duration||0,paused:v.paused,ended:v.ended,blocked});
+  },400);
+  addEventListener('keydown',e=>{
+    if(e.key==='f'||e.key==='F'){fs();return}
+    const a=keyAction(e);if(!a)return;e.preventDefault();
+    if(linked)send({t:'key',a});else{doAction(a);render()}
+  });
+  frame.addEventListener('click',e=>{
+    const v=SL[S.i].querySelector('video');
+    if(v&&blocked){v.play().then(()=>{blocked=false}).catch(()=>{});return}
+    if(!linked&&e.detail===1){doAction(v?'vid':'next');render()}
+  });
+  render();
+}
+
+function bootPresenter(popup,code){
+  document.body.className='pres'+(code||innerWidth<820?' ctl':'');
+  let rc=null;
+  applyCfg(deck,S.cfg);
+  let aud=popup||null,vinfo=null;
+  const saved=ls.get('occ-vp-state-huaraz');
+  let T={run:false,bl:{},sl:{},started:false};
+  if(saved&&Date.now()-(saved.ts||0)<6*3600000){Object.assign(S,saved.S||{});T=Object.assign(T,saved.T||{});T.run=false;S.cd=freshCd(S.i)}
+  let lastTick=Date.now();
+  const pvCur=$('#pvCur'),pvNext=$('#pvNext');
+  let pvKey='',nxKey='';
+  const save=()=>ls.set('occ-vp-state-huaraz',{ts:Date.now(),S:{i:S.i,step:S.step,poll:S.poll},T});
+
+  const go=$('#cGo');
+  go.innerHTML='<option value="">Ir a…</option>'+AGENDA.map(a=>`<optgroup label="${a.sec} · ${a.t} (${a.min} min)">`+SL.map((s,i)=>s.dataset.b===a.id?`<option value="${i}">${i+1}. ${s.dataset.title}</option>`:'').join('')+'</optgroup>').join('');
+  go.onchange=()=>{if(go.value!==''){jump(+go.value);startIfNeeded();update()}go.value='';go.blur()};
+
+  $('#cAgenda').innerHTML=AGENDA.map(a=>`<button class="blk${a.opt?' opt':''}" data-id="${a.id}"><div class="s">${a.sec}</div><div class="n">${a.t}</div><div class="tm"><span class="u">00:00</span><span>${a.min}:00</span></div><div class="pb"><i></i></div></button>`).join('');
+  $('#cAgenda').onclick=e=>{const b=e.target.closest('.blk');if(!b)return;jump(SL.findIndex(s=>s.dataset.b===b.dataset.id));startIfNeeded();update()};
+
+  $('#cRun').onclick=()=>{T.run=!T.run;T.started=true;lastTick=Date.now();update()};
+  $('#cReset').onclick=()=>{if(confirm('¿Reiniciar todos los tiempos a cero?')){T={run:false,bl:{},sl:{},started:false};update()}};
+  $('#cBlack').onclick=()=>{doAction('black');update()};
+  $('#cOpen').onclick=()=>{const w=openProjector();if(w)aud=w;else alert('El navegador bloqueó la ventana emergente. Permítela e intenta de nuevo.')};
+  $('#cCfg').onclick=()=>openCfg(cfg=>{S.cfg=cfg;applyCfg(deck,S.cfg);pvKey=nxKey='';$('#cNotes').dataset.i='';update()});
+  pvCur.onclick=()=>{doAction('next');startIfNeeded();update()};
+
+  function handle(d,src){
+    if(!d||!d.occ)return;
+    if(d.t==='hello'){if(src)aud=src;push()}
+    if(d.t==='key'){doAction(d.a);startIfNeeded();update()}
+    if(d.t==='vid'){vinfo=d;if(d.ended&&S.vid.play){S.vid.play=false;update()}else vidTxt()}
+  }
+  addEventListener('message',e=>handle(e.data,e.source));
+  let linkMsg='';
+  async function joinRoom(){
+    linkMsg='Conectando con la sala '+code+'…';
+    try{await loadJs(PEER_JS)}catch(e){linkMsg='Sin internet en el celular';setTimeout(joinRoom,4000);return}
+    const peer=new Peer();
+    const dial=()=>{
+      const c=peer.connect(ROOM(code),{reliable:true,serialization:'json'});
+      c.on('open',()=>{rc=c;linkMsg='';push()});
+      c.on('data',d=>handle(d,null));
+      c.on('close',()=>{if(rc===c){rc=null;linkMsg='Reconectando…';setTimeout(dial,2000)}});
+    };
+    peer.on('open',dial);
+    peer.on('disconnected',()=>{try{peer.reconnect()}catch(e){}});
+    peer.on('error',e=>{if(e.type==='peer-unavailable'){linkMsg='No se encuentra la sala '+code+'. ¿Está abierta la laptop?';setTimeout(dial,3000)}});
+  }
+  if(code){
+    $('#cOpen').style.display='none';
+    joinRoom();
+    let wl=null;
+    const wake=()=>{if(navigator.wakeLock&&!wl)navigator.wakeLock.request('screen').then(l=>{wl=l;l.addEventListener('release',()=>wl=null)}).catch(()=>{})};
+    addEventListener('pointerdown',wake);
+    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')wake()});
+  }
+  if(document.body.classList.contains('ctl')){$('#cBlack').textContent='Pantalla negra';$('#cRun').title='Cronómetro'}
+  $('#mPrev').onclick=()=>{doAction('prev');update()};
+  $('#mNext').onclick=()=>{doAction('next');startIfNeeded();update()};
+  addEventListener('keydown',e=>{
+    if(e.target.closest('input,select,dialog'))return;
+    if(e.key==='p'||e.key==='P'){$('#cRun').click();return}
+    if(e.key==='g'||e.key==='G'){e.preventDefault();go.focus();if(go.showPicker)try{go.showPicker()}catch(x){};return}
+    const a=keyAction(e);if(!a)return;e.preventDefault();doAction(a);startIfNeeded();update();
+  });
+  addEventListener('resize',()=>{pvKey=nxKey='';update()});
+
+  function startIfNeeded(){if(!T.started&&S.i>0){T.started=true;T.run=true;lastTick=Date.now()}}
+  function push(){
+    const m={occ:1,t:'state',s:S};
+    try{if(aud&&!aud.closed)aud.postMessage(m,'*')}catch(e){}
+    try{if(rc&&rc.open)rc.send(m)}catch(e){}
+  }
+
+  function preview(box,i,step,which){
+    const key=i+'|'+(which==='cur'?'':step)+'|'+box.clientWidth;
+    let sec=box.querySelector('.sl');
+    if((which==='cur'?pvKey:nxKey)!==key){
+      box.innerHTML='<div class="stage"></div>';
+      const st=box.firstChild;
+      if(i<SL.length){
+        sec=SL[i].cloneNode(true);
+        sec.querySelectorAll('aside.notes').forEach(n=>n.remove());
+        sec.querySelectorAll('video').forEach(v=>{const im=document.createElement('img');im.src=v.poster;im.className=v.className;v.replaceWith(im)});
+        sec.classList.add('active');st.appendChild(sec);
+      }else{sec=null;st.style.background='#000'}
+      fit(box,st);
+      if(which==='cur')pvKey=key;else nxKey=key;
+    }
+    if(sec){applySteps(sec,step);applyPoll(sec,S.poll);runCounters(sec);applyCd(sec,which==='cur'?S.cd:freshCd(i))}
+  }
+
+  function vidTxt(){
+    const el=$('#tVid');if(!el)return;
+    const w=$('#tVidW');
+    if(!vinfo){el.textContent='0:00';return}
+    el.textContent=`${mss(vinfo.cur*1000)} / ${mss(vinfo.dur*1000)}`;
+    w.textContent=vinfo.blocked?'El navegador bloqueó el audio: haz un clic en la ventana del proyector (o presiona F allí) y vuelve a reproducir.':'';
+  }
+  function tools(){
+    const sec=SL[S.i],box=$('#cTools');
+    let h='';
+    if(sec.querySelector('video')){h+=`<div class="tr"><span class="big" id="tVid">0:00</span><label>Video (se reproduce solo en el proyector)</label><button class="cb${S.vid.play?' on':''}" data-a="vid">${S.vid.play?'⏸ Pausar':'▶ Reproducir'} (V)</button><button class="cb" data-a="vidr">↺ Desde el inicio</button><div class="wv" id="tVidW"></div></div>`}
+    if(S.cd){h+=`<div class="tr"><span class="big" id="tCd">${mss(cdLeft(S.cd))}</span><label>Cuenta regresiva (visible cuando aparece el reloj)</label><button class="cb${S.cd.end?' on':''}" data-a="cd">${S.cd.end?'⏸ Pausar':'▶ Iniciar'} (T)</button><button class="cb" data-a="cdr">↺</button><button class="cb" data-a="cdp">+1 min</button></div>`}
+    if(sec.classList.contains('poll')){
+      h+=['antes de 5','antes de 10','antes de 15'].map((l,k)=>`<div class="tr"><label>De pie ${l} años</label><button class="cb" data-a="pm" data-k="${k}">−</button><input type="number" min="0" data-k="${k}" value="${S.poll[k]}"><button class="cb" data-a="pp" data-k="${k}">+</button></div>`).join('');
+    }
+    if(box.dataset.h!==h){box.innerHTML=h;box.dataset.h=h;vidTxt()}
+  }
+  $('#cTools').onclick=e=>{
+    const b=e.target.closest('button');if(!b)return;const a=b.dataset.a,k=+b.dataset.k;
+    if(a==='vid'||a==='vidr')doAction(a);
+    if(a==='cd')toggleCd();
+    if(a==='cdr')S.cd=freshCd(S.i);
+    if(a==='cdp'&&S.cd){if(S.cd.end)S.cd.end+=60000;else S.cd.left+=60000;S.cd.dur=Math.max(S.cd.dur,Math.ceil(cdLeft(S.cd)/1000))}
+    if(a==='pm')S.poll[k]=Math.max(0,S.poll[k]-1);
+    if(a==='pp')S.poll[k]++;
+    update();
+  };
+  $('#cTools').oninput=e=>{const i=e.target.closest('input');if(!i)return;S.poll[+i.dataset.k]=Math.max(0,parseInt(i.value)||0);push();preview(pvCur,S.i,S.step,'cur')};
+
+  let lastI=-1;
+  function update(){
+    const sec=SL[S.i],n=nF(sec);
+    if(S.i!==lastI){lastI=S.i;vinfo=null}
+    preview(pvCur,S.i,S.step,'cur');
+    let ni=S.i,ns=S.step+1;if(S.step>=n){ni=S.i+1;ns=0}
+    preview(pvNext,ni,ns,'next');
+    $('#cPos').textContent=`${S.i+1} / ${SL.length} · ${sec.dataset.title}${n?` · clic ${S.step}/${n}`:''}`;
+    $('#cNextT').textContent=ni>=SL.length?'Fin':ni===S.i?`Mismo slide · clic ${ns}/${n}`:`${ni+1}. ${SL[ni].dataset.title}`;
+    const notes=sec.querySelector('aside.notes');
+    if($('#cNotes').dataset.i!=S.i){$('#cNotes').innerHTML=notes?notes.innerHTML:'<p style="color:#8c9590">Sin notas.</p>';$('#cNotes').dataset.i=S.i;$('#cNotes').scrollTop=0}
+    $('#cBlack').classList.toggle('on',!!S.black);
+    const k=document.body.classList.contains('ctl')?'':' (P)';
+    $('#cRun').textContent=(T.run?'⏸ Pausar':(T.started?'▶ Reanudar':'▶ Iniciar'))+k;
+    $('#cRun').classList.toggle('on',T.run);
+    tools();clock();push();save();
+  }
+
+  function clock(){
+    const total=AGENDA.filter(a=>!a.opt).reduce((s,a)=>s+(T.bl[a.id]||0),0);
+    $('#cTotal').textContent=mmss(total);
+    $('#cNow').textContent=new Date().toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'});
+    const cur=SL[S.i].dataset.b;
+    document.querySelectorAll('.blk').forEach(b=>{
+      const a=AGENDA.find(x=>x.id===b.dataset.id),u=T.bl[a.id]||0,r=u/(a.min*60000);
+      b.classList.toggle('cur',a.id===cur);
+      b.querySelector('.u').textContent=mmss(u);
+      const i=b.querySelector('i');i.style.width=Math.min(100,r*100)+'%';
+      i.className=r>1.05?'over':r>.85?'warn':'';
+    });
+    const sug=+SL[S.i].dataset.sug*60000,su=T.sl[S.i]||0;
+    $('#cSlideTxt').textContent=`Este slide: ${mmss(su)} de ${mmss(sug)} sugeridos`;
+    const bi=$('#cSlideT .bar i');bi.style.width=Math.min(100,su/sug*100)+'%';bi.style.background=su>sug*1.1?'#ef6b5b':su>sug*.85?'#e8b04a':'#7cc54d';
+    const pace=$('#cPace');
+    if(!T.started){pace.className='';pace.textContent='Sin iniciar · se inicia al avanzar'}
+    else if(AGENDA.find(a=>a.id===cur).opt){pace.className='';pace.textContent='Sesión opcional (GNA)'}
+    else{
+      let exp=0;for(let j=0;j<S.i;j++)if(!AGENDA.find(a=>a.id===SL[j].dataset.b).opt)exp+=+SL[j].dataset.sug*60000;
+      exp+=Math.min(su,sug);
+      const d=total-exp;
+      if(Math.abs(d)<45000){pace.className='ok';pace.textContent='A tiempo'}
+      else if(d>0){pace.className='late';pace.textContent=`Atrasado ${mmss(d)}`}
+      else{pace.className='early';pace.textContent=`Adelantado ${mmss(-d)}`}
+      if(!T.run)pace.textContent+=' · en pausa';
+    }
+    const ok=(aud&&!aud.closed)||(rc&&rc.open);
+    const l=$('#cLink');l.classList.toggle('ok',!!ok);l.textContent=ok?'● Proyector conectado':'● '+(linkMsg||'Proyector desconectado');
+    const tc=$('#tCd');if(tc&&S.cd)tc.textContent=mss(cdLeft(S.cd));
+    if(S.cd&&S.cd.end&&cdLeft(S.cd)<=0){S.cd.left=0;S.cd.end=null;tools()}
+    const cdBtn=document.querySelector('#cTools [data-a="cd"]');
+    if(cdBtn&&S.cd&&!!S.cd.end!==cdBtn.classList.contains('on'))tools();
+  }
+
+  setInterval(()=>{
+    const now=Date.now(),d=now-lastTick;lastTick=now;
+    if(T.run){const b=SL[S.i].dataset.b;T.bl[b]=(T.bl[b]||0)+d;T.sl[S.i]=(T.sl[S.i]||0)+d}
+    clock();
+    const sec=pvCur.querySelector('.sl');if(sec)applyCd(sec,S.cd);
+  },250);
+  setInterval(()=>{push();save()},1000);
+  update();
+}
+
+function openCfg(onSave){
+  const dlg=$('#dCfg'),f=$('#fCfg');
+  const cfg=Object.assign({},DEFAULTS,ls.get(CFG_KEY)||{});
+  let h='<h3>Personalizar datos</h3><p class="dsub">Se guardan en este navegador. Los campos vacíos se muestran como ______ en la diapositiva.</p>';
+  let open=false;
+  FIELDS.forEach(x=>{
+    if(x.length===1){if(open)h+='</div>';h+=`<h4>${x[0]}</h4><div class="fg">`;open=true;return}
+    if(x[3]==='provs'){
+      const sel=String(cfg[x[0]]||'').split(',').map(v=>v.trim());
+      h+=`<div class="w provpick"><span>${x[1]}</span><div>${PROVS.map(n=>`<label><input type="checkbox" name="${x[0]}" value="${n}"${sel.includes(n)?' checked':''}>${n}</label>`).join('')}</div></div>`;
+      return;
+    }
+    h+=`<label class="${x[2]?'w':''}">${x[1]}<input name="${x[0]}" value="${String(cfg[x[0]]||'').replace(/"/g,'&quot;')}"></label>`;
+  });
+  if(open)h+='</div>';
+  h+='<div class="dact"><button class="cb" type="button" id="cfgDef">Restaurar valores</button><button class="cb" value="cancel">Cancelar</button><button class="cb on" value="ok">Guardar</button></div>';
+  f.innerHTML=h;
+  const val=x=>x[3]==='provs'?[...f.querySelectorAll(`input[name="${x[0]}"]:checked`)].map(i=>i.value).join(', '):f.elements[x[0]].value.trim();
+  $('#cfgDef').onclick=()=>{FIELDS.forEach(x=>{
+    if(x.length<2)return;
+    if(x[3]==='provs'){const d=DEFAULTS[x[0]].split(',').map(v=>v.trim());f.querySelectorAll(`input[name="${x[0]}"]`).forEach(i=>i.checked=d.includes(i.value))}
+    else f.elements[x[0]].value=DEFAULTS[x[0]];
+  })};
+  dlg.onclose=()=>{
+    if(dlg.returnValue!=='ok')return;
+    const out={};FIELDS.forEach(x=>{if(x.length>1)out[x[0]]=val(x)});
+    ls.set(CFG_KEY,out);
+    if(onSave)onSave(Object.assign({},DEFAULTS,out));
+  };
+  dlg.returnValue='';dlg.showModal();
+}
+</script>
+</body>
+</html>
