@@ -189,6 +189,14 @@ body.home #launch{display:flex}
 
 .goal{font-size:34px;color:var(--gray);margin:0 0 34px;max-width:1300px}
 .goal em{font-style:normal;font-weight:800;color:var(--g);border-bottom:4px solid #bfe39a}
+.metas{display:grid;grid-template-columns:repeat(3,1fr);gap:34px;margin:40px 0 44px}
+.metas>div{border:4px solid var(--g);border-radius:28px;padding:30px 26px 26px;text-align:center;background:#fff}
+.metas .n{font-size:96px;font-weight:900;line-height:1;color:var(--g);font-variant-numeric:tabular-nums}
+.metas .n.red{color:var(--red)}
+.metas>div:first-child{border-color:var(--red)}
+.metas h4{margin:16px 0 10px;font-size:24px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink)}
+.metas p{margin:0;font-size:23px;color:var(--gray);line-height:1.35}
+.commit{text-align:center;font-size:26px;font-weight:800;color:var(--red);margin:0}
 .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;margin:0 0 34px}
 .kpis>div{background:var(--g);color:#fff;border-radius:24px;padding:28px 30px}
 .kpis .n{font-size:66px;font-weight:800;line-height:1.05}
@@ -680,18 +688,23 @@ body.ctl #mnav{display:grid;grid-template-columns:1fr 1.7fr;gap:10px;padding:10p
   </aside>
 </section>
 
-<section class="sl mt lg" data-b="ninos" data-sug="2" data-title="Nuestra visión para esta temporada">
+<section class="sl mt lg" data-b="ninos" data-sug="2" data-title="Nuestra visión: metas con números reales">
   <h2 class="h">Nuestra <b>visión <span data-cfg="anio"></span></b></h2>
-  <p class="goal f">En <em data-cfg="zona"></em>, <em data-cfg="v_ninos"></em> necesitan escuchar el Evangelio.</p>
-  <div class="kpis f">
-    <div><div class="n"><span class="count" data-cfg-num="v_iglesias">0</span></div><div class="l">Iglesias</div></div>
-    <div><div class="n"><span class="count" data-cfg-num="v_cajitas">0</span></div><div class="l">Cajitas de regalo</div></div>
-    <div><div class="n"><span class="count" data-cfg-num="v_discipular">0</span></div><div class="l">Niños en LGA</div></div>
+  <div class="metas">
+    <div class="f"><div class="n red"><span class="count" data-cfg-num="m_oport">0</span></div><h4>Oportunidades del Evangelio</h4><p>Cajitas disponibles para compartir el Evangelio.</p></div>
+    <div class="f"><div class="n"><span class="count" data-cfg-num="m_inscritos">0</span></div><h4>Niños inscritos</h4><p>Niños que empiezan La Gran Aventura.</p></div>
+    <div class="f"><div class="n"><span class="count" data-cfg-num="m_graduados">0</span></div><h4>Niños graduados</h4><p>Acompañados hasta completar las 12 lecciones.</p></div>
   </div>
-  <p class="goal f">Grupo no alcanzado: <em data-cfg="v_gna"></em></p>
+  <p class="commit f">Nuestro compromiso: más niños inscritos, discipulados y graduados; no solo porcentajes.</p>
   <aside class="notes">
-    <p>Comparta la visión y las metas de su equipo para esta temporada: cuántas iglesias movilizarán, cuántas oportunidades evangelísticas (cajitas) administrarán y cuántos niños esperan discipular con LGA. Los datos se editan en <b>Datos</b>.</p>
+    <p>Comparta las metas de la temporada con <b>números reales</b>: no hablamos de porcentajes, sino de niños concretos.</p>
+    <ul>
+      <li><b>Oportunidades del Evangelio:</b> cada cajita es una oportunidad para que un niño escuche de Jesús.</li>
+      <li><b>Inscritos:</b> la meta es que cada niño que recibe una cajita sea invitado a La Gran Aventura.</li>
+      <li><b>Graduados:</b> que cada inscrito sea acompañado hasta el final. Inscritos y graduados son el mismo número: no queremos perder a ningún niño en el camino.</li>
+    </ul>
     <p><b>Invitación opcional al Reclutamiento de CM de GNA:</b> "Si Dios lo está llamando a usar el ministerio de OCC para llevar el Evangelio a un grupo no alcanzado, nos gustaría invitarlo a una breve reunión al terminar".</p>
+    <p class="tip">Las metas se editan en <b>Datos</b>.</p>
   </aside>
 </section>
 
@@ -980,14 +993,14 @@ const CFG_KEY='occ-vp-cfg-huaraz';
 const DEFAULTS={
   coordinador:'Equipo Huaraz · Áncash',sede:'Caraz',invitadas:'Huaylas, Yungay, Carhuaz',region:'Perú',zona:'la sierra de Áncash',anio:'2026-2027',anio_stats:'',
   st_cajitas:'414960',st_eventos:'3319',st_lga:'290472',st_creyeron:'156197',st_orar:'75881',st_graduados:'121225',
-  v_ninos:'',v_iglesias:'',v_cajitas:'',v_discipular:'',v_gna:'',
+  m_oport:'22104',m_inscritos:'16578',m_graduados:'16578',v_gna:'',
   sol_disp:'',sol_entrega:'',sol_fecha:''
 };
 const FIELDS=[
   ['Proyección de hoy'],['sede','Sede (ciudad)'],['invitadas','Provincias invitadas',1,'provs'],
-  ['General'],['coordinador','Texto bajo el título (portada)',1],['region','País (celebración)'],['zona','Zona del equipo (visión)'],['anio','Temporada actual'],
+  ['General'],['coordinador','Texto bajo el título (portada)',1],['region','País (celebración)'],['anio','Temporada actual'],
   ['Celebración (temporada pasada)'],['anio_stats','Año de las cifras (vacío = no se muestra)'],['st_cajitas','Cajitas de regalo'],['st_eventos','Eventos evangelísticos'],['st_lga','Niños inscritos en LGA'],['st_creyeron','Creyeron en Jesús'],['st_orar','Compartir y orar'],['st_graduados','Graduados'],
-  ['Visión de esta temporada'],['v_ninos','Niños en mayor necesidad (ej. «los niños de las comunidades altoandinas»)',1],['v_iglesias','Iglesias a movilizar'],['v_cajitas','Cajitas de regalo'],['v_discipular','Niños a discipular en LGA'],['v_gna','Grupo no alcanzado (GNA)'],
+  ['Visión de esta temporada'],['m_oport','Oportunidades del Evangelio (cajitas)'],['m_inscritos','Niños inscritos en LGA'],['m_graduados','Niños graduados'],['v_gna','Grupo no alcanzado (GNA)'],
   ['Solicitudes'],['sol_disp','Disponibles en',1],['sol_entrega','Se entregan a',1],['sol_fecha','Fecha límite',1]
 ];
 const SUBS={"viaje":[[0.0,5.0,"¿Qué se necesita para llevar esta cajita de regalo"],[5.0,9.96,"hasta las aldeas más remotas de la Amazonía peruana?"],[9.96,13.0,"Veámoslo paso a paso."],[13.0,17.34,"Hay varios países que recolectan cajitas de regalo,"],[17.34,24.24,"pero esta viene de un punto de recolección en Estados Unidos, por la cercanía."],[24.24,29.28,"Desde allí viaja a Charlotte, Carolina del Norte, donde se clasifica y se prepara para su viaje internacional."],[29.28,32.4,"También se agrega al envío una caja de materiales ministeriales."],[32.4,39.43,"Luego la caja sube a un camión rumbo al puerto de Charleston, Carolina del Sur,"],[39.43,42.08,"donde comienza su viaje por el océano."],[42.08,47.6,"El barco de carga rodea Florida y cruza el Canal de Panamá"],[47.6,50.6,"y baja por la costa oeste de Sudamérica hacia Lima, Perú."],[50.6,54.96,"Al llegar a Lima, sube a otro camión"],[54.96,61.04,"y empieza un viaje de 20 días cruzando los Andes hasta el río Ucayali, en Pucallpa."],[61.04,67.76,"En el Ucayali toma otro barco de carga: cinco días río abajo"],[67.76,72.53,"hasta Iquitos, conocida como la puerta de la Amazonía."],[72.53,76.8,"Después, un último tramo en camión hasta el río Marañón."],[76.8,82.16,"Tras 12 horas en bote por el Marañón, nuestra cajita llega a San Lorenzo,"],[82.16,86.97,"pero el viaje aún no termina. El último tramo exige tres trayectos de dos días río arriba"],[86.97,92.95,"en una canoa con motor llamada peque peque, desde San Lorenzo hasta aldeas en lo profundo de la selva,"],[92.95,97.6,"donde un Compañero de Ministerio capacitado entrega la cajita a un niño"],[97.6,100.8,"que espera con ansias recibirla y conocer más de Jesús."],[101.76,106.83,"¡Qué viaje! Gracias por acompañarnos"],[106.83,112.0,"y por compartir el amor de Dios, una cajita a la vez."]],"libro":[[0.5,7.5,"En lo profundo de la Amazonía peruana"],[7.6,13.0,"viven los chapra"],[29.0,39.0,"Todos nos hemos reunido para escuchar la Palabra de Dios."],[40.5,44.0,"Operation Christmas Child llegó a la selva del Perú."],[44.2,50.4,"Ha sido una oportunidad de trabajar junto a nuestro equipo de liderazgo regional, con sede en Iquitos."],[51.0,59.2,"Trabajamos con traductores chapra para traducir El Mejor Regalo al idioma chapra."],[60.0,64.2,"Es el primer libro impreso que tienen, y ellos ayudaron a hacerlo."],[64.5,67.1,"No tienen ningún otro material en su propio idioma."],[67.4,75.0,"Lo usarán en la escuela para enseñar las historias de Jesús del Evangelio de Juan en chapra."],[76.5,80.7,"Nunca habíamos visto algo así."],[81.0,84.8,"Creo que Dios está cerca de nosotros."],[85.0,91.2,"Este libro va a ayudar a los niños de nuestra comunidad."],[91.5,99.0,"Lo importante es que puedan entender en su idioma para que puedan conocer a Dios."],[100.3,103.9,"Es un libro que está marcando la historia de un pueblo"],[104.0,107.4,"que siempre ha sido rechazado"],[107.5,111.3,"y relegado por otro idioma y otro pueblo."],[111.5,113.4,"Pero es un pueblo que Dios ama."],[113.5,117.2,"Se siente el poder de Jesús que une."],[117.4,122.6,"Los reunió alrededor de un regalo sencillo, pero ahora se dan cuenta de que hay mucho más."],[123.0,129.4,"Inca Roca, Capirona, Guayusa, Pijuayal."],[129.8,132.4,"Todos han escuchado la Palabra de Dios,"],[132.5,135.3,"que Jesús vino a este mundo"],[135.4,140.5,"y que Jesús vino a morir por nosotros."],[141.3,146.9,"Tener el libro El Mejor Regalo traducido a su propio idioma es algo increíble."],[147.0,151.8,"Es algo que va a trascender por generaciones."]]};
